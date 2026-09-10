@@ -26,3 +26,9 @@ build/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Claude Code session-local state
+.claude/
+
+# Stray Recycle Bin artifacts that occasionally land in designs/
+designs/$R*
