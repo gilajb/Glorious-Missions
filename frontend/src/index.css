@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    @apply bg-background font-body-md text-on-surface antialiased;
+  }
+}
+
+/* Google's recommended base rule for the variable Material Symbols font --
+   without it the glyphs render as literal ligature text at the wrong size. */
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined";
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+}
+
+/* The red/blue/green/white repeating stripe under the header and in the
+   mobile drawer, echoing the Maasai Shuka cloth pattern from DESIGN.md. */
+.shuka-stripe {
+  background-image: repeating-linear-gradient(
+    90deg,
+    #c92a2a 0px,
+    #c92a2a 32px,
+    #3858b6 32px,
+    #3858b6 48px,
+    #187a31 48px,
+    #187a31 64px,
+    #ffffff 64px,
+    #ffffff 72px
+  );
+  opacity: 0.85;
+}

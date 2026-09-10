@@ -1,0 +1,106 @@
+import Icon from "../../components/Icon";
+
+const TENETS = [
+  {
+    key: "compassion",
+    iconBg: "bg-primary-fixed",
+    iconText: "text-primary",
+    labelText: "text-primary",
+    icon: "volunteer_activism",
+    label: "Tenet One",
+    title: "Compassion in Action",
+    description:
+      "Faith must never remain theoretical. As taught in the Epistle of James, faith without tangible works is dead. We do not arrive with solely words; we show up in person, walk alongside local churches through hardship and joy alike, and give practically as needs arise.",
+    verseRef: "James 2:16",
+    verseText:
+      "“If one of you says, 'Go in peace; keep warm and well fed,' but does nothing about their physical needs, what good is it?”",
+  },
+  {
+    key: "autonomy",
+    iconBg: "bg-secondary-fixed",
+    iconText: "text-secondary",
+    labelText: "text-secondary",
+    icon: "diversity_3",
+    label: "Tenet Two",
+    title: "Community Autonomy",
+    description:
+      "We reject paternalistic Western intervention. We do not plant parallel hierarchies; we support indigenous pastors and council elders who know the land and their people intimately. Every initiative is led by, and handed over entirely to, local leadership.",
+    verseRef: "1 Thessalonians 5:12",
+    verseText:
+      "“Honor those who work hard among you, who care for you in the Lord and who admonish you.”",
+  },
+  {
+    key: "documentation",
+    iconBg: "bg-tertiary-fixed",
+    iconText: "text-tertiary",
+    labelText: "text-tertiary",
+    icon: "photo_library",
+    label: "Tenet Three",
+    title: "Truthful Documentation",
+    description:
+      "Visual storytelling is sacred stewardship. We refuse staged grief, fabricated drama, or pity-exploiting media tropes. Our images portray human joy, radiant beauty, cultural elegance, and honest hardship with transparency, always preserving the sacred privacy and dignity of every subject.",
+    verseRef: "Ephesians 4:25",
+    verseText:
+      "“Therefore each of you must put off falsehood and speak truthfully to your neighbor, for we are all members of one body.”",
+  },
+];
+
+export default function Tenets() {
+  return (
+    <section
+      id="core-tenets"
+      className="w-full py-space-3xl md:py-space-4xl bg-surface-container-low scroll-mt-20"
+    >
+      <div className="w-full px-margin-mobile md:px-margin-tablet lg:px-margin-desktop max-w-[1320px] mx-auto">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-space-md mb-space-2xl">
+          <div className="max-w-xl">
+            <span className="font-label-sm text-label-sm uppercase tracking-widest text-tertiary-container font-semibold block mb-space-xs">
+              Our Unwavering Pillars
+            </span>
+            <h2 className="font-headline-lg text-headline-lg text-on-surface">
+              The Three Tenets of Dignity
+            </h2>
+          </div>
+          <p className="font-body-md text-body-md text-on-surface-variant max-w-md">
+            How we conduct operations, hold accountability before God, and serve alongside
+            communities across Kenya.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-space-lg">
+          {TENETS.map((tenet) => (
+            <div
+              key={tenet.key}
+              className="flex flex-col bg-surface-container-lowest p-space-xl rounded-xl shadow-sm hover:shadow-md transition-shadow"
+            >
+              <div
+                className={`w-12 h-12 rounded-lg ${tenet.iconBg} ${tenet.iconText} flex items-center justify-center mb-space-md`}
+              >
+                <Icon name={tenet.icon} className="text-[28px]" />
+              </div>
+              <span
+                className={`font-label-sm text-label-sm ${tenet.labelText} uppercase tracking-widest mb-space-xxs`}
+              >
+                {tenet.label}
+              </span>
+              <h3 className="font-headline-sm text-headline-sm text-on-surface mb-space-sm">
+                {tenet.title}
+              </h3>
+              <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed flex-1">
+                {tenet.description}
+              </p>
+              <div className="pt-space-md mt-space-md bg-surface-container-low p-space-sm rounded-lg">
+                <span className="font-label-sm text-label-sm font-semibold text-on-surface block">
+                  {tenet.verseRef}
+                </span>
+                <span className="font-body-sm text-body-sm italic text-on-surface-variant">
+                  {tenet.verseText}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}

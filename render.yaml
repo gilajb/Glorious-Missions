@@ -1,0 +1,48 @@
+# Render Blueprint. Deploy with: Render dashboard -> New -> Blueprint.
+# Secrets marked `sync: false` must be filled in from the Render dashboard.
+
+databases:
+  - name: missions-db
+    databaseName: missions
+    plan: free
+
+services:
+  - type: web
+    name: missions-backend
+    runtime: python
+    plan: free
+    # Monorepo: everything below runs inside backend/.
+    rootDir: backend
+    buildCommand: >-
+      pip install -r requirements.txt &&
+      python manage.py collectstatic --no-input &&
+      python manage.py migrate --no-input
+    startCommand: gunicorn missions_backend.wsgi:application --bind 0.0.0.0:$PORT --workers 3 --timeout 60 --log-file -
+    healthCheckPath: /healthz/
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.9"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: missions-db
+          property: connectionString
+      - key: CLOUDINARY_URL
+        sync: false
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
+      - key: EMAIL_HOST
+        sync: false
+      - key: EMAIL_PORT
+        value: "587"
+      - key: EMAIL_HOST_USER
+        sync: false
+      - key: EMAIL_HOST_PASSWORD
+        sync: false
+      - key: NOTIFY_EMAIL
+        sync: false
