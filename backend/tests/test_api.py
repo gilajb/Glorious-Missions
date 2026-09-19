@@ -9,17 +9,20 @@ from unittest import mock
 
 import cloudinary
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.core import mail
 from django.core.cache import cache
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
+from rest_framework.authtoken.models import Token
 
 from contact.models import ContactSubmission
 from core.models import SiteContent, TeamMember, Testimonial
-from gallery.models import GalleryImage
+from gallery.models import GalleryImage, GalleryPhoto
 from involvement.models import GetInvolvedLink, GetInvolvedSubmission
-from missions.models import Mission
+from missions.models import Mission, MissionPhoto
 
 
 class PublishedFilteringTests(TestCase):
@@ -311,3 +314,259 @@ class HealthCheckTests(TestCase):
         response = self.client.get("/healthz/")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {"status": "ok"})
+
+
+def _fake_uploaded_photo(public_id="fake-photo"):
+    """A CloudinaryResource standing in for a real upload response, so photo
+    upload tests never make a real network call to Cloudinary."""
+    return cloudinary.CloudinaryResource(public_id=public_id)
+
+
+_TINY_GIF = (
+    b"GIF87a\x01\x00\x01\x00\x81\x00\x00\xff\xff\xff\x00\x00\x00\x00\x00\x00\x00"
+    b"\x00\x00,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x08\x04\x00\x01\x04\x04\x00;"
+)
+
+
+def _tiny_upload(name="photo.gif"):
+    return SimpleUploadedFile(name, _TINY_GIF, content_type="image/gif")
+
+
+class AdminAuthTests(TestCase):
+    """Login/logout/me for the React admin portal."""
+
+    def setUp(self):
+        cache.clear()
+        self.staff = User.objects.create_user(
+            username="admin", password="s3cret-pass", is_staff=True
+        )
+        self.non_staff = User.objects.create_user(
+            username="visitor", password="s3cret-pass", is_staff=False
+        )
+
+    def test_staff_login_returns_a_token(self):
+        response = self.client.post(
+            reverse("accounts:login"),
+            {"username": "admin", "password": "s3cret-pass"},
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertEqual(body["user"]["username"], "admin")
+        self.assertTrue(Token.objects.filter(key=body["token"], user=self.staff).exists())
+
+    def test_wrong_password_is_rejected_without_revealing_which_field(self):
+        response = self.client.post(
+            reverse("accounts:login"),
+            {"username": "admin", "password": "nope"},
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("Invalid username or password", response.json()["detail"])
+
+    def test_non_staff_user_cannot_log_in(self):
+        response = self.client.post(
+            reverse("accounts:login"),
+            {"username": "visitor", "password": "s3cret-pass"},
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_me_requires_a_valid_token(self):
+        self.assertEqual(self.client.get(reverse("accounts:me")).status_code, 401)
+
+        token = Token.objects.create(user=self.staff)
+        response = self.client.get(
+            reverse("accounts:me"), HTTP_AUTHORIZATION=f"Token {token.key}"
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["username"], "admin")
+
+    def test_logout_deletes_the_token(self):
+        token = Token.objects.create(user=self.staff)
+
+        response = self.client.post(
+            reverse("accounts:logout"), HTTP_AUTHORIZATION=f"Token {token.key}"
+        )
+
+        self.assertEqual(response.status_code, 204)
+        self.assertFalse(Token.objects.filter(pk=token.pk).exists())
+
+
+class AdminMissionApiTests(TestCase):
+    """Staff-only CRUD for Mission Monday posts."""
+
+    def setUp(self):
+        cache.clear()
+        staff = User.objects.create_user(username="admin", password="x", is_staff=True)
+        self.token = Token.objects.create(user=staff).key
+        self.auth_header = {"HTTP_AUTHORIZATION": f"Token {self.token}"}
+
+    def test_unauthenticated_write_is_rejected(self):
+        response = self.client.post(
+            "/api/admin/missions/",
+            {"title": "Draft", "summary": "s"},
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 401)
+
+    def test_authenticated_staff_can_create_a_draft_and_it_stays_hidden(self):
+        response = self.client.post(
+            "/api/admin/missions/",
+            {"title": "Draft", "summary": "s", "county": "Nairobi"},
+            content_type="application/json",
+            **self.auth_header,
+        )
+
+        self.assertEqual(response.status_code, 201, response.content)
+        self.assertEqual(Mission.objects.count(), 1)
+        # Not published -> invisible on the public endpoint.
+        self.assertEqual(self.client.get("/api/missions/").json(), [])
+
+    def test_toggle_publish_makes_it_visible_publicly(self):
+        mission = Mission.objects.create(title="Draft", summary="s", published=False)
+
+        response = self.client.post(
+            f"/api/admin/missions/{mission.pk}/toggle-publish/", **self.auth_header
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()["published"])
+        self.assertEqual(
+            [row["title"] for row in self.client.get("/api/missions/").json()], ["Draft"]
+        )
+
+    def test_rejects_a_non_youtube_vimeo_video_url(self):
+        response = self.client.post(
+            "/api/admin/missions/",
+            {"title": "M", "summary": "s", "video_url": "https://example.com/video.mp4"},
+            content_type="application/json",
+            **self.auth_header,
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("video_url", response.json())
+
+    def test_accepts_a_youtube_video_url(self):
+        response = self.client.post(
+            "/api/admin/missions/",
+            {
+                "title": "M",
+                "summary": "s",
+                "video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+            },
+            content_type="application/json",
+            **self.auth_header,
+        )
+
+        self.assertEqual(response.status_code, 201, response.content)
+
+    def test_article_html_is_sanitized_on_save(self):
+        mission = Mission.objects.create(title="M", summary="s")
+
+        response = self.client.patch(
+            f"/api/admin/missions/{mission.pk}/",
+            {"article": "<script>alert(1)</script><p>Hello <strong>world</strong></p>"},
+            content_type="application/json",
+            **self.auth_header,
+        )
+
+        self.assertEqual(response.status_code, 200, response.content)
+        mission.refresh_from_db()
+        self.assertNotIn("<script>", mission.article)
+        self.assertIn("<strong>world</strong>", mission.article)
+
+    @mock.patch("cloudinary.uploader.upload_resource")
+    def test_adding_photos_reflects_on_the_public_endpoint_in_order(self, upload_resource):
+        upload_resource.side_effect = [
+            _fake_uploaded_photo("first"),
+            _fake_uploaded_photo("second"),
+        ]
+        mission = Mission.objects.create(title="M", summary="s", published=True)
+
+        for name in ["a.gif", "b.gif"]:
+            response = self.client.post(
+                f"/api/admin/missions/{mission.pk}/photos/",
+                {"image": _tiny_upload(name)},
+                **self.auth_header,
+            )
+            self.assertEqual(response.status_code, 201, response.content)
+
+        self.assertEqual(MissionPhoto.objects.filter(mission=mission).count(), 2)
+        photos = self.client.get("/api/missions/").json()[0]["photos"]
+        self.assertEqual([p["order"] for p in photos], [0, 1])
+
+    @mock.patch("cloudinary.uploader.upload_resource")
+    def test_deleting_a_photo_removes_it(self, upload_resource):
+        upload_resource.return_value = _fake_uploaded_photo()
+        mission = Mission.objects.create(title="M", summary="s")
+        self.client.post(
+            f"/api/admin/missions/{mission.pk}/photos/",
+            {"image": _tiny_upload()},
+            **self.auth_header,
+        )
+        photo = MissionPhoto.objects.get(mission=mission)
+
+        response = self.client.delete(
+            f"/api/admin/mission-photos/{photo.pk}/", **self.auth_header
+        )
+
+        self.assertEqual(response.status_code, 204)
+        self.assertFalse(MissionPhoto.objects.filter(pk=photo.pk).exists())
+
+
+class AdminGalleryApiTests(TestCase):
+    """Staff-only CRUD for gallery entries."""
+
+    def setUp(self):
+        cache.clear()
+        staff = User.objects.create_user(username="admin", password="x", is_staff=True)
+        self.auth_header = {
+            "HTTP_AUTHORIZATION": f"Token {Token.objects.create(user=staff).key}"
+        }
+
+    def test_unauthenticated_write_is_rejected(self):
+        response = self.client.post(
+            "/api/admin/gallery/", {"caption": "x"}, content_type="application/json"
+        )
+        self.assertEqual(response.status_code, 401)
+
+    def test_authenticated_staff_can_create_a_draft_entry(self):
+        response = self.client.post(
+            "/api/admin/gallery/",
+            {"caption": "New entry", "county": "Turkana"},
+            content_type="application/json",
+            **self.auth_header,
+        )
+
+        self.assertEqual(response.status_code, 201, response.content)
+        self.assertEqual(self.client.get("/api/gallery/").json(), [])
+
+    def test_rejects_a_non_youtube_vimeo_video_url(self):
+        response = self.client.post(
+            "/api/admin/gallery/",
+            {"caption": "x", "video_url": "not-a-url"},
+            content_type="application/json",
+            **self.auth_header,
+        )
+        self.assertEqual(response.status_code, 400)
+
+    @mock.patch("cloudinary.uploader.upload_resource")
+    def test_adding_a_photo_reflects_on_the_public_endpoint(self, upload_resource):
+        upload_resource.return_value = _fake_uploaded_photo()
+        entry = GalleryImage.objects.create(image="", caption="Live", published=True)
+
+        response = self.client.post(
+            f"/api/admin/gallery/{entry.pk}/photos/",
+            {"image": _tiny_upload()},
+            **self.auth_header,
+        )
+
+        self.assertEqual(response.status_code, 201, response.content)
+        self.assertEqual(GalleryPhoto.objects.filter(gallery_image=entry).count(), 1)
+        row = self.client.get("/api/gallery/").json()[0]
+        self.assertEqual(len(row["photos"]), 1)

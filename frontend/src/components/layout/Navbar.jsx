@@ -7,7 +7,7 @@ import Logo from "../Logo";
 const NAV_LINKS = [
   { to: "/", label: "Home", end: true },
   { to: "/about", label: "About" },
-  { to: "/missions", label: "Missions" },
+  { to: "/mission-mondays", label: "Mission Mondays" },
   { to: "/gallery", label: "Gallery" },
   { to: "/get-involved", label: "Get Involved" },
   { to: "/contact", label: "Contact" },

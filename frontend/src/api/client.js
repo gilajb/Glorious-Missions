@@ -12,7 +12,7 @@ export const API_BASE_URL = (
 ).replace(/\/+$/, "");
 
 /**
- * @typedef {"not_found"|"rate_limited"|"validation"|"server"|"network"} ApiErrorKind
+ * @typedef {"not_found"|"rate_limited"|"validation"|"server"|"network"|"auth"} ApiErrorKind
  */
 
 export class ApiError extends Error {
@@ -47,22 +47,39 @@ async function parseJsonSafely(response) {
 /**
  * @param {string} path - e.g. "/api/missions/", leading slash required
  * @param {object} [options]
- * @param {"GET"|"POST"} [options.method]
+ * @param {"GET"|"POST"|"PATCH"|"DELETE"} [options.method]
  * @param {object} [options.body] - JSON-serialisable request body
+ * @param {string} [options.token] - admin auth token, sent as `Authorization: Token <token>`
+ * @param {FormData} [options.formData] - multipart body (file upload); takes
+ *   precedence over `body` and skips JSON encoding so the browser can set
+ *   its own multipart boundary
  */
-async function request(path, { method = "GET", body } = {}) {
+async function request(path, { method = "GET", body, token, formData } = {}) {
+  const headers = {};
+  if (token) headers.Authorization = `Token ${token}`;
+  if (formData === undefined && body !== undefined) {
+    headers["Content-Type"] = "application/json";
+  }
+
   let response;
   try {
     response = await fetch(`${API_BASE_URL}${path}`, {
       method,
-      headers: body !== undefined ? { "Content-Type": "application/json" } : undefined,
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      headers,
+      body: formData !== undefined ? formData : body !== undefined ? JSON.stringify(body) : undefined,
     });
   } catch {
     throw new ApiError(
       "Unable to reach the server. Check your connection and try again.",
       { kind: "network" }
     );
+  }
+
+  if (response.status === 401 || response.status === 403) {
+    throw new ApiError("You must be logged in to do that.", {
+      status: response.status,
+      kind: "auth",
+    });
   }
 
   if (response.status === 404) {
@@ -103,5 +120,11 @@ async function request(path, { method = "GET", body } = {}) {
   return parseJsonSafely(response);
 }
 
-export const apiGet = (path) => request(path);
-export const apiPost = (path, body) => request(path, { method: "POST", body });
+export const apiGet = (path, options) => request(path, options);
+export const apiPost = (path, body, options) => request(path, { ...options, method: "POST", body });
+export const apiPatch = (path, body, options) => request(path, { ...options, method: "PATCH", body });
+export const apiDelete = (path, options) => request(path, { ...options, method: "DELETE" });
+
+/** POST/PATCH a FormData body (file upload) with an admin token attached. */
+export const apiUpload = (path, formData, { token, method = "POST" } = {}) =>
+  request(path, { method, formData, token });

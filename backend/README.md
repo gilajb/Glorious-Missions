@@ -17,7 +17,9 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-- Admin: http://127.0.0.1:8000/admin/
+- Django admin: http://127.0.0.1:8000/admin/ (still works as a fallback/db-fix tool)
+- React admin portal: run `frontend` too and visit its `/admin` route, logged in
+  with the superuser you just created
 - Browsable API (DEBUG only): http://127.0.0.1:8000/api/missions/
 
 Run the tests with `python manage.py test`.
@@ -36,10 +38,28 @@ endpoints — works without it.
 | App | Models |
 | --- | --- |
 | `core` | `SiteContent` (home / about copy blocks), `TeamMember`, `Testimonial` |
-| `missions` | `Mission` (title, summary, image, `county`, `start_date`, `end_date`) |
-| `gallery` | `GalleryImage` (image, caption, `county` — optional, unlike Mission's) |
+| `accounts` | none — admin login/logout/me over Django's built-in `User` + DRF's `Token` |
+| `missions` | `Mission` (title, summary, sanitized `article` HTML, `county`, `start_date`/`end_date`, `publish_date`, legacy `image`, `video_url`), `MissionPhoto` (ordered, FK to `Mission`) |
+| `gallery` | `GalleryImage` (caption, `county` — optional, unlike Mission's — legacy `image`, `video_url`), `GalleryPhoto` (ordered, FK to `GalleryImage`) |
 | `contact` | `ContactSubmission` |
 | `involvement` | `GetInvolvedSubmission`, `GetInvolvedLink` |
+
+Public site copy calls the `missions` feature "Mission Mondays" (route
+`/mission-mondays`, nav label, page copy) — that's a display-only rename on
+the frontend. The Django app, `Mission` model, table names, and API path
+(`/api/missions/`) are unchanged on purpose; see `frontend/src/App.jsx`'s
+comment for the rationale.
+
+`Mission.image` and `GalleryImage.image` are deprecated legacy single-photo
+fields, kept only so pre-multi-photo rows and any lingering readers keep
+working; new content uses each model's `photos` (`MissionPhoto`/
+`GalleryPhoto`, ordered by an `order` int). Both `video_url` fields accept
+only YouTube/Vimeo URLs (`core/validators.py::validate_video_url`) so the
+frontend can safely turn them into an iframe embed. `Mission.article` is
+admin-authored rich text HTML from the React admin's Tiptap editor,
+sanitized server-side before saving (`core/sanitize.py`) — never trust it as
+pre-sanitized on read alone; the frontend sanitizes again with DOMPurify
+before rendering as defense-in-depth.
 
 `core` also holds the shared helpers: `core/fields.py` (Cloudinary URL
 serializer field), `core/admin_mixins.py` (admin thumbnail preview) and
@@ -47,13 +67,15 @@ serializer field), `core/admin_mixins.py` (admin thumbnail preview) and
 
 ## API
 
-All routes are unauthenticated and unpaginated.
+Every route below `/api/` except `/api/auth/*` and `/api/admin/*` is public,
+read-mostly, and unpaginated — the original design intent, unchanged.
 
 | Method | Path | Returns |
 | --- | --- | --- |
 | GET | `/api/site-content/home/` | The published `SiteContent` block for `home` |
 | GET | `/api/site-content/about/` | The published `SiteContent` block for `about` |
 | GET | `/api/missions/` | Published missions, newest first |
+| GET | `/api/missions/<id>/` | One published mission, full `article`/`photos`/`video_url` included |
 | GET | `/api/gallery/` | Published gallery images, newest first |
 | GET | `/api/about/team/` | Published team members, by `display_order` |
 | GET | `/api/testimonials/` | Published testimonials, newest first |
@@ -61,6 +83,37 @@ All routes are unauthenticated and unpaginated.
 | GET | `/api/get-involved/links/` | All links, by `display_order` |
 | POST | `/api/get-involved/submit/` | 201 + the created submission (throttled, see below) |
 | GET | `/healthz/` | `{"status": "ok"}` — Render health check |
+
+### Admin portal API
+
+Backs the React admin at `frontend`'s `/admin` route. Every route here
+requires `Authorization: Token <token>` from a **staff** user
+(`IsStaffUser` in `core/permissions.py`) — a non-staff `User` can log into
+Django's own `/admin/` if given access there, but cannot obtain a token
+here. Tokens are DRF's plain `rest_framework.authtoken` (no expiry; revoke
+one by logging out, or by deleting it in Django admin).
+
+| Method | Path | Notes |
+| --- | --- | --- |
+| POST | `/api/auth/login/` | `{username, password}` -> `{token, user}`. Throttled (`login` scope, 10/hour/IP) |
+| POST | `/api/auth/logout/` | Deletes the caller's token |
+| GET | `/api/auth/me/` | The current user; the SPA uses this to validate a stored token after reload |
+| GET/POST/PATCH/DELETE | `/api/admin/missions/`, `/api/admin/missions/<id>/` | Full CRUD, drafts included |
+| POST | `/api/admin/missions/<id>/toggle-publish/` | Flips `published` |
+| GET/POST | `/api/admin/missions/<id>/photos/` | List/add photos (multipart, one file per request) |
+| PATCH/DELETE | `/api/admin/mission-photos/<photo_id>/` | Reorder (`{"order": n}`) or remove one photo |
+| GET/POST/PATCH/DELETE | `/api/admin/gallery/`, `/api/admin/gallery/<id>/` | Same shape as missions, for `GalleryImage` |
+| POST | `/api/admin/gallery/<id>/toggle-publish/` | Flips `published` |
+| GET/POST | `/api/admin/gallery/<id>/photos/` | List/add photos (multipart, one file per request) |
+| PATCH/DELETE | `/api/admin/gallery-photos/<photo_id>/` | Reorder or remove one photo |
+
+Photo uploads proxy through Django straight into each model's existing
+`CloudinaryField` (see `core/fields.py`) rather than a direct signed
+browser-to-Cloudinary upload — deliberately, since videos are handled as
+YouTube/Vimeo links rather than uploaded files, so there's no large binary
+payload that would need to bypass the backend. The admin UI uploads photos
+one file at a time (not batched) so a slow/cold-started request doesn't
+block the rest.
 
 Read endpoints return only rows with `published=True`. `GetInvolvedLink` has no
 `published` field, so every row is public — bear that in mind when adding rows.
@@ -97,11 +150,12 @@ block; add one when the content is a *fact* that goes stale on its own.
 **Rate limiting.** `POST /api/contact/` and `POST /api/get-involved/submit/` are
 each capped at 5 requests/hour per IP via DRF's `ScopedRateThrottle`
 (`throttle_scope = "contact"` / `"get_involved"` on the view, rates in
-`REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"]` in `settings.py`). A request past the
-limit gets `429 Too Many Requests` with a `Retry-After` header and creates no
-row. The two endpoints have independent limits. Read endpoints are not
-throttled. Tune the rate in `settings.py` if 5/hour proves too strict for
-legitimate use.
+`REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"]` in `settings.py`). `POST
+/api/auth/login/` has its own `login` scope, 10/hour/IP, to blunt brute-force
+against the admin portal. A request past a limit gets `429 Too Many Requests`
+with a `Retry-After` header. Each endpoint's limit is independent. Read
+endpoints and the authenticated `/api/admin/*` endpoints are not throttled.
+Tune rates in `settings.py` if they prove too strict for legitimate use.
 
 ## Environment variables
 
@@ -155,6 +209,19 @@ cookies, and `SECURE_PROXY_SSL_HEADER` for Render's TLS-terminating proxy.
   `/api/gallery/` return everything.
 - **Email is sent synchronously** inside the request. A slow SMTP server slows
   the response; a background task queue would fix that if it becomes a problem.
-- **Tests are smoke-level only** (`backend/tests/test_api.py`): they cover
-  published/unpublished filtering, image serialisation, and that a submission
-  still succeeds when the notification email fails. No coverage of the admin.
+- **Tests are smoke-level** (`backend/tests/test_api.py`): they cover
+  published/unpublished filtering, image serialisation, that a submission
+  still succeeds when the notification email fails, and the admin portal's
+  auth/CRUD/publish/photo-upload/sanitization/video-validation paths. Photo
+  upload tests mock `cloudinary.uploader.upload_resource` rather than
+  hitting real Cloudinary.
+- **Admin tokens don't expire.** Fine for a handful of trusted staff users;
+  revoke a leaked one via `/api/auth/logout/` or by deleting it in Django
+  admin (`Auth Token` model). A team with turnover would want
+  `djangorestframework-simplejwt`'s short-lived tokens instead.
+- **The React admin stores its token in `sessionStorage`.** Cleared on tab
+  close, but readable by any script on the page — an XSS bug anywhere in the
+  admin bundle could exfiltrate it. Mitigated by keeping the rich text
+  editor's output (and the sanitizer's allow-list in `core/sanitize.py`)
+  deliberately small; there is no other place admin-controlled HTML reaches
+  the DOM.

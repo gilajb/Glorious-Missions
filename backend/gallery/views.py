@@ -8,4 +8,4 @@ class GalleryImageListView(generics.ListAPIView):
     """All published gallery images, most recently uploaded first."""
 
     serializer_class = GalleryImageSerializer
-    queryset = GalleryImage.objects.filter(published=True)
+    queryset = GalleryImage.objects.filter(published=True).prefetch_related("photos")

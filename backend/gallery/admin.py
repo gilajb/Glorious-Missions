@@ -1,7 +1,14 @@
 from django.contrib import admin
 
 from core.admin_mixins import CloudinaryPreviewMixin
-from gallery.models import GalleryImage
+from gallery.models import GalleryImage, GalleryPhoto
+
+
+class GalleryPhotoInline(CloudinaryPreviewMixin, admin.TabularInline):
+    model = GalleryPhoto
+    extra = 1
+    fields = ["image", "image_preview", "order"]
+    readonly_fields = ["image_preview"]
 
 
 @admin.register(GalleryImage)
@@ -12,4 +19,5 @@ class GalleryImageAdmin(CloudinaryPreviewMixin, admin.ModelAdmin):
     search_fields = ["caption", "county"]
     date_hierarchy = "uploaded_at"
     readonly_fields = ["image_preview", "uploaded_at"]
-    fields = ["image", "image_preview", "caption", "county", "published", "uploaded_at"]
+    inlines = [GalleryPhotoInline]
+    fields = ["image", "image_preview", "caption", "county", "video_url", "published", "uploaded_at"]

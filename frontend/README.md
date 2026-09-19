@@ -33,12 +33,55 @@ rather than adding a second source.
 
 ### Routing
 
-[src/App.jsx](src/App.jsx) defines the six routes (`/`, `/about`,
-`/missions`, `/gallery`, `/contact`, `/get-involved`) plus a catch-all 404,
-all nested under [Layout](src/components/layout/Layout.jsx) (persistent
-Navbar/Footer around an `<Outlet />`). All six now have real content;
+[src/App.jsx](src/App.jsx) defines the public routes (`/`, `/about`,
+`/mission-mondays`, `/mission-mondays/:id`, `/gallery`, `/contact`,
+`/get-involved`) plus a catch-all 404, all nested under
+[Layout](src/components/layout/Layout.jsx) (persistent Navbar/Footer around
+an `<Outlet />`). `/missions` still resolves — it redirects to
+`/mission-mondays` for anyone with the old link bookmarked/indexed.
 [PagePlaceholder](src/pages/PagePlaceholder.jsx) is no longer used by any
 route but is kept around as the starting point for new pages.
+
+"Mission Mondays" is a display-only rename of the `missions` feature: the
+page file (`pages/Missions.jsx`), its component names, and the backend's
+`missions` app/`Mission` model/`/api/missions/` path are all unchanged —
+only the route path, nav labels, and on-page copy changed. See the comment
+in `App.jsx` above the `Missions` import.
+
+Outside `Layout` entirely, `/admin/login` and everything under `/admin`
+(behind [ProtectedRoute](src/admin/ProtectedRoute.jsx)) make up the admin
+portal — see below.
+
+### Admin portal
+
+`src/admin/` is a self-contained authenticated section for the client to
+manage Gallery and Mission Monday content, kept deliberately separate from
+`src/pages/` (no public Navbar/Footer, different data-mutation concerns).
+
+| File | Purpose |
+| --- | --- |
+| [AuthContext.jsx](src/admin/AuthContext.jsx) | Holds the admin token/user in `sessionStorage` + React context; revalidates a stored token against `GET /api/auth/me/` on load |
+| [ProtectedRoute.jsx](src/admin/ProtectedRoute.jsx) | Redirects to `/admin/login` when not authenticated |
+| [AdminLayout.jsx](src/admin/AdminLayout.jsx) | Sidebar chrome for the whole `/admin/*` section |
+| [components/PhotoUploader.jsx](src/admin/components/PhotoUploader.jsx) | Add/remove/reorder photos; uploads one file at a time so a slow request can't block the rest |
+| [components/RichTextEditor.jsx](src/admin/components/RichTextEditor.jsx) | Tiptap, deliberately constrained to the tag set `core/sanitize.py` allow-lists on the backend — widen both together or not at all |
+| [components/VideoUrlField.jsx](src/admin/components/VideoUrlField.jsx) | YouTube/Vimeo URL input with an inline embed preview (`utils/video.js`) |
+
+A gallery entry or Mission Monday post is created with its text fields
+first; the form then redirects into its own edit page, where the Photos
+section (which needs a real id to attach photos to) appears. Rich text is
+sanitized server-side before storage, then sanitized again client-side with
+`dompurify` immediately before `dangerouslySetInnerHTML` on the public
+detail page ([MissionMondayDetail.jsx](src/pages/MissionMondayDetail.jsx)) —
+defense-in-depth, since that's the one field where admin input becomes live
+HTML on a public page.
+
+The admin token is stored in `sessionStorage`, not a cookie: it's sent as an
+`Authorization: Token <token>` header (see `api/client.js`'s `apiUpload`/
+`token` support), which needs no change to the backend's
+`CORS_ALLOW_CREDENTIALS = False`. Cleared on tab close; still readable by
+any script on the page if the admin bundle ever had an XSS bug, which is
+why the rich text editor's allowed tags stay small.
 
 ### Shared components
 
@@ -89,10 +132,16 @@ failure into an `ApiError` with a `kind`:
 | `server` | any other non-2xx | `status` |
 | `network` | `fetch` itself threw (offline, DNS, CORS) | — |
 
-[src/api/endpoints.js](src/api/endpoints.js) exposes one function per route
-(`getSiteContent`, `getMissions`, `getGalleryImages`, `getInvolvedLinks`,
-`submitContact`, `submitGetInvolved`) — pages should call these, not `fetch`
-or `client.js` directly.
+[src/api/endpoints.js](src/api/endpoints.js) exposes one function per public
+route (`getSiteContent`, `getMissions`, `getMission`, `getGalleryImages`,
+`getInvolvedLinks`, `submitContact`, `submitGetInvolved`) plus the admin
+portal's auth (`login`, `logout`, `getMe`) and CRUD functions (`getAdminMissions`,
+`createMission`, `updateMission`, `deleteMission`, `toggleMissionPublish`,
+`addMissionPhoto`/`reorderMissionPhoto`/`deleteMissionPhoto`, and the
+equivalent `*GalleryEntry`/`*GalleryPhoto` set) — pages should call these,
+not `fetch` or `client.js` directly. Admin functions take a `token` as their
+last argument (from `useAuth()`), sent as an `Authorization` header via
+`client.js`'s `apiPatch`/`apiDelete`/`apiUpload` helpers.
 
 [src/hooks/useFetch.js](src/hooks/useFetch.js) is a small hook for GET
 endpoints: `const { data, error, loading, reload } = useFetch(() =>

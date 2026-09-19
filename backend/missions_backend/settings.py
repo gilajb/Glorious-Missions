@@ -78,11 +78,13 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # Third party
     "rest_framework",
+    "rest_framework.authtoken",
     "corsheaders",
     "cloudinary",
     "cloudinary_storage",
     # Local
     "core",
+    "accounts",
     "missions",
     "gallery",
     "contact",
@@ -195,23 +197,34 @@ STORAGES = {
 # ---------------------------------------------------------------------------
 
 REST_FRAMEWORK = {
+    # Public endpoints stay AllowAny (the global default); admin endpoints
+    # opt into IsStaffUser explicitly via their own permission_classes.
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.AllowAny",
+    ],
+    # Token auth is what the React admin sends (Authorization: Token <key>);
+    # Session stays so the Browsable API keeps working in DEBUG. Neither
+    # relies on cookies crossing the CORS boundary, so CORS_ALLOW_CREDENTIALS
+    # stays False.
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
     ],
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
     ]
     + (["rest_framework.renderers.BrowsableAPIRenderer"] if DEBUG else []),
     # Scoped rather than global: only the public POST endpoints (contact,
-    # get-involved) opt in, via `throttle_scope` on the view. Keyed by IP
-    # (AnonRateThrottle's default cache key), since these endpoints have no
-    # authentication to key on instead.
+    # get-involved, admin login) opt in, via `throttle_scope` on the view.
+    # Keyed by IP (AnonRateThrottle's default cache key), since these
+    # endpoints have no authentication to key on instead.
     "DEFAULT_THROTTLE_CLASSES": [
         "rest_framework.throttling.ScopedRateThrottle",
     ],
     "DEFAULT_THROTTLE_RATES": {
         "contact": "5/hour",
         "get_involved": "5/hour",
+        "login": "10/hour",
     },
 }
 

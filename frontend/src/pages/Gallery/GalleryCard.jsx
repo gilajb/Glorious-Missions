@@ -26,6 +26,21 @@ export default function GalleryCard({ image, onOpen }) {
             </span>
           </div>
         )}
+        {(image.video_url || image.photos?.length > 1) && (
+          <div className="absolute top-space-sm right-space-sm flex items-center gap-space-xs">
+            {image.video_url && (
+              <span className="w-7 h-7 rounded-full bg-black/50 flex items-center justify-center">
+                <Icon name="play_arrow" className="text-[16px] text-white" />
+              </span>
+            )}
+            {image.photos?.length > 1 && (
+              <span className="inline-flex items-center gap-1 px-space-sm py-space-xxs rounded-full bg-black/50 text-white font-label-sm text-label-sm">
+                <Icon name="photo_library" className="text-[14px]" />
+                {image.photos.length}
+              </span>
+            )}
+          </div>
+        )}
         <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/20 transition-colors">
           <Icon
             name="zoom_in"

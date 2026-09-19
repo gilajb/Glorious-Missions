@@ -1,7 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import Icon from "../../components/Icon";
 import SafeImage from "../../components/SafeImage";
+import VideoEmbed from "../../components/VideoEmbed";
 import { formatMonthYear } from "../../utils/dates";
 
 /**
@@ -11,6 +12,17 @@ import { formatMonthYear } from "../../utils/dates";
  * rather than invented.
  */
 export default function Lightbox({ image, onClose }) {
+  const [photoIndex, setPhotoIndex] = useState(0);
+  // A new entry may open while the lightbox is already mounted (clicking
+  // another card without it fully unmounting) -- always start at photo 0.
+  // Adjusted during render rather than in an effect, per
+  // https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
+  const [lastImageId, setLastImageId] = useState(image?.id);
+  if (image?.id !== lastImageId) {
+    setLastImageId(image?.id);
+    setPhotoIndex(0);
+  }
+
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === "Escape") onClose();
@@ -21,6 +33,8 @@ export default function Lightbox({ image, onClose }) {
 
   if (!image) return null;
   const dateLabel = formatMonthYear(image.uploaded_at);
+  const photos = image.photos?.length ? image.photos : image.image ? [{ id: "legacy", image: image.image }] : [];
+  const currentPhoto = photos[photoIndex] || photos[0];
 
   return (
     <div
@@ -45,11 +59,36 @@ export default function Lightbox({ image, onClose }) {
 
         <div className="relative aspect-[4/3] bg-surface-dim">
           <SafeImage
-            src={image.image}
+            src={currentPhoto?.image}
             alt={image.caption || "Gallery photograph"}
             className="w-full h-full object-cover"
           />
+          {photos.length > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={() => setPhotoIndex((i) => (i - 1 + photos.length) % photos.length)}
+                aria-label="Previous photo"
+                className="absolute left-space-sm top-1/2 -translate-y-1/2 p-space-xs rounded-full bg-surface/90 text-on-surface-variant hover:text-on-surface shadow-sm"
+              >
+                <Icon name="chevron_left" className="text-[24px]" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setPhotoIndex((i) => (i + 1) % photos.length)}
+                aria-label="Next photo"
+                className="absolute right-space-sm top-1/2 -translate-y-1/2 p-space-xs rounded-full bg-surface/90 text-on-surface-variant hover:text-on-surface shadow-sm"
+              >
+                <Icon name="chevron_right" className="text-[24px]" />
+              </button>
+              <span className="absolute bottom-space-sm left-1/2 -translate-x-1/2 px-space-sm py-space-xxs rounded-full bg-black/50 text-white font-label-sm text-label-sm">
+                {photoIndex + 1} / {photos.length}
+              </span>
+            </>
+          )}
         </div>
+
+        {image.video_url && <VideoEmbed url={image.video_url} title={image.caption || "Gallery video"} />}
 
         {(image.caption || image.county || dateLabel) && (
           <div className="p-space-lg flex flex-col gap-space-xs">

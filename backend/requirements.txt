@@ -8,3 +8,4 @@ django-cloudinary-storage==0.3.0
 whitenoise==6.12.0
 gunicorn==26.2.0
 python-dotenv==1.2.3
+nh3==0.3.7

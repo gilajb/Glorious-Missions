@@ -21,7 +21,7 @@ export default function Missions() {
           <div className="flex items-center gap-space-xs flex-wrap">
             <div className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse" />
             <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary font-semibold">
-              Missions Across Kenya
+              Mission Mondays
             </span>
             <span className="text-outline-variant">&bull;</span>
             <span className="font-label-sm text-label-sm text-on-surface-variant tracking-wider">
@@ -32,7 +32,7 @@ export default function Missions() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-end">
             <div className="lg:col-span-8 flex flex-col gap-space-sm">
               <h1 className="font-display text-display-mobile md:text-display text-on-surface tracking-tight leading-tight">
-                Active Missions Across Kenya
+                Mission Mondays Across Kenya
               </h1>
               <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl leading-relaxed">
                 From the streets of Nairobi to the highland plains of Marsabit and the pastoral
@@ -56,7 +56,7 @@ export default function Missions() {
                 totalCount={missions.length}
                 selectedCounty={selectedCounty}
                 onSelect={setSelectedCounty}
-                allLabel="All Missions"
+                allLabel="All Mission Mondays"
               />
             </div>
           )}
@@ -69,14 +69,14 @@ export default function Missions() {
             <div className="flex flex-col items-center text-center gap-space-xs py-space-2xl bg-surface-container-low rounded-xl">
               <Icon name="explore_off" className="text-[32px] text-outline" />
               <p className="font-body-md text-body-md text-on-surface-variant">
-                No missions to show right now — check back soon.
+                No Mission Monday posts to show right now — check back soon.
               </p>
             </div>
           ) : filteredMissions.length === 0 && !loading ? (
             <div className="flex flex-col items-center text-center gap-space-xs py-space-2xl bg-surface-container-low rounded-xl">
               <Icon name="filter_alt_off" className="text-[32px] text-outline" />
               <p className="font-body-md text-body-md text-on-surface-variant">
-                No published missions in {selectedCounty} right now.
+                No published Mission Monday posts in {selectedCounty} right now.
               </p>
             </div>
           ) : (

@@ -4,7 +4,7 @@ import { FaFacebookF, FaInstagram, FaTiktok, FaXTwitter } from "react-icons/fa6"
 const NAV_LINKS = [
   { to: "/", label: "Home" },
   { to: "/about", label: "Our Calling" },
-  { to: "/missions", label: "Active Missions" },
+  { to: "/mission-mondays", label: "Mission Mondays" },
   { to: "/gallery", label: "Visual Gallery" },
   { to: "/get-involved", label: "Get Involved" },
   { to: "/contact", label: "Field Inquiries" },

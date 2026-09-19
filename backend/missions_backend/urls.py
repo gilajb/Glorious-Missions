@@ -7,6 +7,13 @@
     POST /api/contact/
     GET  /api/get-involved/links/
     POST /api/get-involved/submit/
+
+    POST /api/auth/login/
+    POST /api/auth/logout/
+    GET  /api/auth/me/
+
+    /api/admin/missions/...   (staff-only CRUD, see missions/admin_urls.py)
+    /api/admin/gallery/...    (staff-only CRUD, see gallery/admin_urls.py)
 """
 
 from django.conf import settings
@@ -29,10 +36,13 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("healthz/", healthz, name="healthz"),
     path("api/", include("core.urls")),
+    path("api/", include("accounts.urls")),
     path("api/", include("missions.urls")),
     path("api/", include("gallery.urls")),
     path("api/", include("contact.urls")),
     path("api/", include("involvement.urls")),
+    path("api/admin/", include("missions.admin_urls")),
+    path("api/admin/", include("gallery.admin_urls")),
 ]
 
 if settings.DEBUG and not settings.CLOUDINARY_URL:

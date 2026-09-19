@@ -51,7 +51,7 @@ export default function FeaturedMission() {
               <div className="absolute top-space-md left-space-md bg-surface-container-lowest/90 backdrop-blur-md px-space-md py-space-xs rounded-full shadow-sm flex items-center gap-space-xs">
                 <span className="w-2.5 h-2.5 rounded-full bg-tertiary-container" />
                 <span className="font-label-sm text-label-sm text-on-surface font-semibold">
-                  {showEmptyState ? "Coming Soon" : "Featured Mission"}
+                  {showEmptyState ? "Coming Soon" : "Latest Mission Monday"}
                 </span>
               </div>
             </div>
@@ -66,11 +66,11 @@ export default function FeaturedMission() {
                 {showEmptyState ? (
                   <>
                     <h3 className="font-headline-lg text-headline-lg text-on-surface mb-space-md">
-                      New Missions Coming Soon
+                      New Mission Mondays Coming Soon
                     </h3>
                     <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed mb-space-lg">
-                      We're preparing our next field dispatch. Visit the missions page to see
-                      everything currently underway.
+                      We're preparing our next field dispatch. Visit the Mission Mondays page to
+                      see everything currently underway.
                     </p>
                   </>
                 ) : (
@@ -93,10 +93,10 @@ export default function FeaturedMission() {
                   Support This Mission
                 </Link>
                 <Link
-                  to="/missions"
+                  to="/mission-mondays"
                   className="inline-flex items-center justify-center px-space-md py-space-sm bg-surface-container text-on-surface font-label-lg text-label-lg rounded-lg hover:bg-surface-container-high transition-colors"
                 >
-                  View All Missions
+                  View All Mission Mondays
                 </Link>
               </div>
             </div>

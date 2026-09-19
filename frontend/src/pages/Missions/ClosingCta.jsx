@@ -17,8 +17,8 @@ export default function ClosingCta() {
               Help us reach more of Kenya's counties with the Gospel.
             </h3>
             <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">
-              Every mission is paired with local church partnership, intentional discipleship,
-              and documentary storytelling that shares these stories with the world.
+              Every Mission Monday post is paired with local church partnership, intentional
+              discipleship, and documentary storytelling that shares these stories with the world.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row items-center gap-space-md z-10 shrink-0 w-full lg:w-auto">
@@ -27,7 +27,7 @@ export default function ClosingCta() {
               className="w-full sm:w-auto inline-flex items-center justify-center px-space-xl py-space-md bg-primary-container text-on-primary font-label-lg text-label-lg rounded-lg shadow-sm hover:opacity-95 transition-all transform active:scale-95"
             >
               <Icon name="volunteer_activism" className="text-[20px] mr-space-xs" />
-              <span>Support Our Missions</span>
+              <span>Support Mission Mondays</span>
             </Link>
             <Link
               to="/about"
