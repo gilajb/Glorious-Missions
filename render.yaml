@@ -5,16 +5,19 @@
 # deliberately reuses the same Postgres instance created earlier for local
 # dev (a project decision, not the default; the usual/safer practice is a
 # separate database per environment). Set it to that instance's connection
-# string as a dashboard secret. Use the Internal Database URL (not the
-# External one) -- it only resolves for services in the *same region* as
-# the database, which is why the web service below pins region: ohio.
+# string as a dashboard secret.
+#
+# missions-backend and the Postgres instance are in different Render
+# regions, so the Internal Database URL will NOT resolve (region is
+# immutable after a service is created, so this can't be fixed by pinning
+# `region:` here). Use the EXTERNAL Database URL instead, and make sure
+# it requires SSL (Render's external Postgres endpoints require sslmode).
 
 services:
   - type: web
     name: missions-backend
     runtime: python
     plan: free
-    region: ohio
     # Monorepo: everything below runs inside backend/.
     rootDir: backend
     buildCommand: >-
