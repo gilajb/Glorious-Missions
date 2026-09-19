@@ -8,6 +8,10 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- The hero image URL comes from the site-content API response, so
+         warming up the connection to the backend shaves the DNS/TLS/TCP
+         handshake off the critical path before that fetch even starts. -->
+    <link rel="preconnect" href="%VITE_API_BASE_URL%" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,600;0,700;1,400&family=Work+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"

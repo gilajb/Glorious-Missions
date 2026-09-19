@@ -24,6 +24,7 @@ export default function HeroSection({
   primaryCta,
   secondaryCta,
   children,
+  priority = true,
 }) {
   return (
     // -mt-20 cancels Layout's `pt-20` (the fixed header's height) so the
@@ -36,6 +37,7 @@ export default function HeroSection({
           src={background}
           alt={backgroundAlt}
           className="w-full h-full object-cover object-center"
+          priority={priority}
         />
         {/*
           The content block is pinned to the bottom (`justify-end` below), so

@@ -10,7 +10,14 @@ import Icon from "./Icon";
  * of the two branches renders, so the layout doesn't shift once real images
  * arrive.
  */
-export default function SafeImage({ src, alt = "", className = "", fallbackIcon = "image", ...rest }) {
+export default function SafeImage({
+  src,
+  alt = "",
+  className = "",
+  fallbackIcon = "image",
+  priority = false,
+  ...rest
+}) {
   if (!src) {
     return (
       <div
@@ -23,5 +30,14 @@ export default function SafeImage({ src, alt = "", className = "", fallbackIcon 
     );
   }
 
-  return <img src={src} alt={alt} className={className} {...rest} />;
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className={className}
+      loading={priority ? "eager" : "lazy"}
+      fetchPriority={priority ? "high" : "auto"}
+      {...rest}
+    />
+  );
 }
