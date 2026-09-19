@@ -58,7 +58,6 @@ export default function App() {
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<Navigate to="gallery" replace />} />
                 <Route path="gallery" element={<GalleryManager />} />
-                <Route path="gallery/new" element={<GalleryForm />} />
                 <Route path="gallery/:id/edit" element={<GalleryForm />} />
                 <Route path="mission-mondays" element={<MissionMondayManager />} />
                 <Route path="mission-mondays/new" element={<MissionMondayForm />} />

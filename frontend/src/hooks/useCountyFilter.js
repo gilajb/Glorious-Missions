@@ -7,7 +7,7 @@ const EMPTY = [];
 /**
  * Derives a county filter over a fetched list, rather than hardcoding a
  * fixed set of options -- a new county just needs one published row tagged
- * with it, no code change. Used by both Missions and Gallery.
+ * with it, no code change. Used by Missions (Gallery has no county field).
  *
  * @param {object[]|null} data - the raw fetch result (nullable while loading)
  * @param {object} [options]

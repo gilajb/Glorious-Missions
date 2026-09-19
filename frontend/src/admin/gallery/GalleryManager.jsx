@@ -1,17 +1,29 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import Icon from "../../components/Icon";
 import SafeImage from "../../components/SafeImage";
-import { deleteGalleryEntry, getAdminGalleryEntries, toggleGalleryPublish } from "../../api/endpoints";
+import { createGalleryEntry, deleteGalleryEntry, getAdminGalleryEntries, toggleGalleryPublish } from "../../api/endpoints";
 import { useFetch } from "../../hooks/useFetch";
 import { useAuth } from "../AuthContext";
 
 export default function GalleryManager() {
   const { token } = useAuth();
+  const navigate = useNavigate();
   const { data, loading, error, reload } = useFetch(() => getAdminGalleryEntries(token), [token]);
   const entries = data || [];
   const [busyId, setBusyId] = useState(null);
+  const [creating, setCreating] = useState(false);
+
+  const handleCreate = async () => {
+    setCreating(true);
+    try {
+      const created = await createGalleryEntry({}, token);
+      navigate(`/admin/gallery/${created.id}/edit`);
+    } finally {
+      setCreating(false);
+    }
+  };
 
   const handleTogglePublish = async (id) => {
     setBusyId(id);
@@ -38,13 +50,15 @@ export default function GalleryManager() {
     <div className="flex flex-col gap-space-lg">
       <div className="flex items-center justify-between">
         <h1 className="font-headline-md text-headline-md text-on-surface">Gallery</h1>
-        <Link
-          to="/admin/gallery/new"
-          className="inline-flex items-center gap-space-xs px-space-md py-space-sm bg-primary-container text-on-primary font-label-lg text-label-lg rounded-lg shadow-sm hover:opacity-95"
+        <button
+          type="button"
+          disabled={creating}
+          onClick={handleCreate}
+          className="inline-flex items-center gap-space-xs px-space-md py-space-sm bg-primary-container text-on-primary font-label-lg text-label-lg rounded-lg shadow-sm hover:opacity-95 disabled:opacity-60"
         >
           <Icon name="add" className="text-[18px]" />
-          New entry
-        </Link>
+          {creating ? "Creating…" : "New entry"}
+        </button>
       </div>
 
       {loading ? (
@@ -68,12 +82,8 @@ export default function GalleryManager() {
                 />
               </div>
               <div className="p-space-md flex flex-col gap-space-xs">
-                <p className="font-body-md text-body-md text-on-surface truncate">
-                  {entry.caption || "Untitled"}
-                </p>
                 <p className="font-label-sm text-label-sm text-on-surface-variant">
-                  {entry.county || "No county"} · {entry.photos.length} photo
-                  {entry.photos.length === 1 ? "" : "s"}
+                  {entry.photos.length} photo{entry.photos.length === 1 ? "" : "s"}
                   {!entry.published && " · Draft"}
                 </p>
                 <div className="flex items-center gap-space-xs pt-space-xs">

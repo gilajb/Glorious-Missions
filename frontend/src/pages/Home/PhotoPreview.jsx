@@ -15,20 +15,15 @@ function PhotoCard({ image }) {
       <div className="relative aspect-[4/3] overflow-hidden">
         <SafeImage
           src={image.image}
-          alt={image.caption || "Gallery photograph"}
+          alt="Gallery photograph"
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
       </div>
-      <div className="p-space-lg flex-1 flex flex-col justify-between">
-        <h4 className="font-headline-sm text-headline-sm text-on-surface mb-space-xs">
-          {image.caption || "Untitled photograph"}
-        </h4>
-        {uploadedLabel && (
-          <div className="mt-space-md pt-space-xs text-on-surface-variant font-label-sm text-label-sm">
-            {uploadedLabel}
-          </div>
-        )}
-      </div>
+      {uploadedLabel && (
+        <div className="p-space-lg text-on-surface-variant font-label-sm text-label-sm">
+          {uploadedLabel}
+        </div>
+      )}
     </div>
   );
 }

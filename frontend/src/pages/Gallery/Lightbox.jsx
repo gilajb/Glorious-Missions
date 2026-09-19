@@ -2,15 +2,9 @@ import { useEffect, useState } from "react";
 
 import Icon from "../../components/Icon";
 import SafeImage from "../../components/SafeImage";
-import VideoEmbed from "../../components/VideoEmbed";
 import { formatMonthYear } from "../../utils/dates";
 
-/**
- * Full-size view of one gallery photo. Only shows real fields (image,
- * caption, county, upload date) -- the reference design's modal also showed
- * a photographer byline, which isn't backed by any field and was dropped
- * rather than invented.
- */
+/** Full-size view of one gallery entry's photo(s). */
 export default function Lightbox({ image, onClose }) {
   const [photoIndex, setPhotoIndex] = useState(0);
   // A new entry may open while the lightbox is already mounted (clicking
@@ -60,7 +54,7 @@ export default function Lightbox({ image, onClose }) {
         <div className="relative aspect-[4/3] bg-surface-dim">
           <SafeImage
             src={currentPhoto?.image}
-            alt={image.caption || "Gallery photograph"}
+            alt="Gallery photograph"
             className="w-full h-full object-cover"
           />
           {photos.length > 1 && (
@@ -88,26 +82,9 @@ export default function Lightbox({ image, onClose }) {
           )}
         </div>
 
-        {image.video_url && <VideoEmbed url={image.video_url} title={image.caption || "Gallery video"} />}
-
-        {(image.caption || image.county || dateLabel) && (
-          <div className="p-space-lg flex flex-col gap-space-xs">
-            {image.caption && (
-              <p className="font-body-md text-body-md text-on-surface leading-relaxed">
-                {image.caption}
-              </p>
-            )}
-            {(image.county || dateLabel) && (
-              <div className="flex items-center gap-space-sm font-label-sm text-label-sm text-on-surface-variant">
-                {image.county && (
-                  <span className="flex items-center gap-1">
-                    <Icon name="place" className="text-[16px]" />
-                    {image.county}
-                  </span>
-                )}
-                {dateLabel && <span>{dateLabel}</span>}
-              </div>
-            )}
+        {dateLabel && (
+          <div className="p-space-lg">
+            <span className="font-label-sm text-label-sm text-on-surface-variant">{dateLabel}</span>
           </div>
         )}
       </div>
