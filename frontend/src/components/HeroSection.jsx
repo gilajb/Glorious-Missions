@@ -50,7 +50,14 @@ export default function HeroSection({
         <div className="absolute inset-0 bg-secondary/15 mix-blend-multiply" />
       </div>
 
-      <div className="relative z-10 w-full max-w-[1320px] mx-auto px-margin-mobile md:px-margin-tablet lg:px-margin-desktop pt-space-3xl md:pt-space-4xl pb-space-3xl md:pb-space-4xl flex flex-col justify-end min-h-[60vh] md:min-h-[70vh]">
+      {/*
+        pt-space-4xl (96px) rather than the smaller 3xl: the fixed header is
+        83px tall (h-20 + its 3px stripe) and this section runs full-bleed
+        behind it, so top padding is the only thing keeping the title clear
+        of the header once content (long body copy + wrapping CTAs on
+        mobile) exceeds min-h and the flex box has no slack left above it.
+      */}
+      <div className="relative z-10 w-full max-w-[1320px] mx-auto px-margin-mobile md:px-margin-tablet lg:px-margin-desktop pt-space-4xl pb-space-3xl md:pb-space-4xl flex flex-col justify-end min-h-[60vh] md:min-h-[70vh]">
         <div className="max-w-3xl flex flex-col items-start">
           {eyebrow && (
             <div className="inline-flex items-center gap-space-xs px-space-md py-space-xxs rounded-full bg-surface-container-lowest/90 backdrop-blur-md mb-space-md shadow-sm">
