@@ -75,24 +75,18 @@ class PublishedFilteringTests(TestCase):
         self.assertEqual([row["title"] for row in response.json()], ["Live"])
 
     def test_gallery_returns_only_published_rows(self):
-        GalleryImage.objects.create(image="sample", caption="Live", published=True)
-        GalleryImage.objects.create(image="sample", caption="Draft", published=False)
+        GalleryImage.objects.create(image="live-sample", published=True)
+        GalleryImage.objects.create(image="draft-sample", published=False)
 
         response = self.client.get("/api/gallery/")
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual([row["caption"] for row in response.json()], ["Live"])
-
-    def test_gallery_image_serialises_county(self):
-        GalleryImage.objects.create(image="sample", caption="Live", county="Samburu", published=True)
-
-        row = self.client.get("/api/gallery/").json()[0]
-        self.assertEqual(row["county"], "Samburu")
+        self.assertEqual(len(response.json()), 1)
 
     def test_gallery_image_is_serialised_as_a_url(self):
         cloudinary.config(cloud_name="test-cloud")
         self.addCleanup(cloudinary.config, cloud_name=None)
-        GalleryImage.objects.create(image="sample", caption="Live", published=True)
+        GalleryImage.objects.create(image="sample", published=True)
 
         image = self.client.get("/api/gallery/").json()[0]["image"]
 
@@ -102,7 +96,7 @@ class PublishedFilteringTests(TestCase):
 
     def test_image_is_null_rather_than_a_500_when_cloudinary_is_unconfigured(self):
         cloudinary.config(cloud_name=None)
-        GalleryImage.objects.create(image="sample", caption="Live", published=True)
+        GalleryImage.objects.create(image="sample", published=True)
 
         with self.assertLogs("core.fields", level="WARNING"):
             response = self.client.get("/api/gallery/")
@@ -531,14 +525,14 @@ class AdminGalleryApiTests(TestCase):
 
     def test_unauthenticated_write_is_rejected(self):
         response = self.client.post(
-            "/api/admin/gallery/", {"caption": "x"}, content_type="application/json"
+            "/api/admin/gallery/", {}, content_type="application/json"
         )
         self.assertEqual(response.status_code, 401)
 
     def test_authenticated_staff_can_create_a_draft_entry(self):
         response = self.client.post(
             "/api/admin/gallery/",
-            {"caption": "New entry", "county": "Turkana"},
+            {},
             content_type="application/json",
             **self.auth_header,
         )
@@ -546,19 +540,10 @@ class AdminGalleryApiTests(TestCase):
         self.assertEqual(response.status_code, 201, response.content)
         self.assertEqual(self.client.get("/api/gallery/").json(), [])
 
-    def test_rejects_a_non_youtube_vimeo_video_url(self):
-        response = self.client.post(
-            "/api/admin/gallery/",
-            {"caption": "x", "video_url": "not-a-url"},
-            content_type="application/json",
-            **self.auth_header,
-        )
-        self.assertEqual(response.status_code, 400)
-
     @mock.patch("cloudinary.uploader.upload_resource")
     def test_adding_a_photo_reflects_on_the_public_endpoint(self, upload_resource):
         upload_resource.return_value = _fake_uploaded_photo()
-        entry = GalleryImage.objects.create(image="", caption="Live", published=True)
+        entry = GalleryImage.objects.create(image="", published=True)
 
         response = self.client.post(
             f"/api/admin/gallery/{entry.pk}/photos/",

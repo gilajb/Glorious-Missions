@@ -1,23 +1,16 @@
 from cloudinary.models import CloudinaryField
 from django.db import models
 
-from core.validators import validate_video_url
-
 
 class GalleryImage(models.Model):
-    """An entry shown in the public gallery: one or more photos, optionally
-    paired with a video."""
+    """An entry shown in the public gallery: one or more photos, no other
+    metadata -- the gallery is a pure photo collection (see MissionPhoto's
+    sibling `Mission` model for a content type with captions/video/article)."""
 
     # Deprecated: the original single-image field, kept only so existing rows
     # and any lingering readers keep working. New content uses `photos`
     # (see GalleryPhoto below). Do not use this for new features.
     image = CloudinaryField("image")
-    caption = models.CharField(max_length=255, blank=True)
-    # Optional, unlike Mission.county: not every photo is tied to one place
-    # (e.g. a portrait or an office event), so it's left blank rather than
-    # required.
-    county = models.CharField(max_length=100, blank=True, default="")
-    video_url = models.URLField(blank=True, default="", validators=[validate_video_url])
     published = models.BooleanField(default=False)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
@@ -25,7 +18,7 @@ class GalleryImage(models.Model):
         ordering = ["-uploaded_at"]
 
     def __str__(self):
-        return self.caption or f"Gallery image #{self.pk}"
+        return f"Gallery image #{self.pk}"
 
 
 class GalleryPhoto(models.Model):

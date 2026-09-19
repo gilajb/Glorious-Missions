@@ -33,12 +33,4 @@ class GalleryImageAdminSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GalleryImage
-        fields = [
-            "id",
-            "caption",
-            "county",
-            "video_url",
-            "published",
-            "photos",
-            "uploaded_at",
-        ]
+        fields = ["id", "published", "photos", "uploaded_at"]
