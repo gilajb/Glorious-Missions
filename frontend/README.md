@@ -94,7 +94,7 @@ why the rich text editor's allowed tags stay small.
 | [SafeImage](src/components/SafeImage.jsx) | Renders an `<img>`, or a layout-preserving placeholder box when `src` is `null` (every image until Cloudinary is configured on the backend — see backend/README.md) |
 | [Icon](src/components/Icon.jsx) | Material Symbols Outlined wrapper — `<Icon name="volunteer_activism" />` |
 | [Logo](src/components/Logo.jsx) | Text-badge wordmark. The reference design links to the design tool's own temporary preview CDN, which isn't safe to hotlink into a real app — swap this for an `<img>` once the client provides real brand assets |
-| [CountyFilterPills](src/components/CountyFilterPills.jsx) | "All" + one pill per county, with counts. Pair with the `useCountyFilter` hook below. Used by Missions and Gallery |
+| [CountyFilterPills](src/components/CountyFilterPills.jsx) | "All" + one pill per county, with counts. Pair with the `useCountyFilter` hook below. Used by Missions only (Gallery has no county field) |
 
 Per-page-only components (e.g. `Missions/MissionCard`, `Gallery/GalleryCard`,
 `GetInvolved/Pillars`) live under their page's own folder in `src/pages/`

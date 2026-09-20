@@ -3,9 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 
 import Icon from "../../components/Icon";
 import SafeImage from "../../components/SafeImage";
+import { ApiError } from "../../api/client";
 import { createGalleryEntry, deleteGalleryEntry, getAdminGalleryEntries, toggleGalleryPublish } from "../../api/endpoints";
 import { useFetch } from "../../hooks/useFetch";
 import { useAuth } from "../AuthContext";
+
+function actionErrorMessage(err) {
+  return err instanceof ApiError ? err.message : "Something went wrong. Please try again.";
+}
 
 export default function GalleryManager() {
   const { token } = useAuth();
@@ -14,12 +19,16 @@ export default function GalleryManager() {
   const entries = data || [];
   const [busyId, setBusyId] = useState(null);
   const [creating, setCreating] = useState(false);
+  const [actionError, setActionError] = useState(null);
 
   const handleCreate = async () => {
     setCreating(true);
+    setActionError(null);
     try {
       const created = await createGalleryEntry({}, token);
       navigate(`/admin/gallery/${created.id}/edit`);
+    } catch (err) {
+      setActionError(actionErrorMessage(err));
     } finally {
       setCreating(false);
     }
@@ -27,9 +36,12 @@ export default function GalleryManager() {
 
   const handleTogglePublish = async (id) => {
     setBusyId(id);
+    setActionError(null);
     try {
       await toggleGalleryPublish(id, token);
       await reload();
+    } catch (err) {
+      setActionError(actionErrorMessage(err));
     } finally {
       setBusyId(null);
     }
@@ -38,9 +50,12 @@ export default function GalleryManager() {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this gallery entry? This cannot be undone.")) return;
     setBusyId(id);
+    setActionError(null);
     try {
       await deleteGalleryEntry(id, token);
       await reload();
+    } catch (err) {
+      setActionError(actionErrorMessage(err));
     } finally {
       setBusyId(null);
     }
@@ -60,6 +75,12 @@ export default function GalleryManager() {
           {creating ? "Creating…" : "New entry"}
         </button>
       </div>
+
+      {actionError && (
+        <p role="alert" className="font-body-sm text-body-sm text-error">
+          {actionError}
+        </p>
+      )}
 
       {loading ? (
         <p className="font-body-md text-body-md text-on-surface-variant">Loading…</p>

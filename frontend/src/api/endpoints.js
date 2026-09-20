@@ -1,25 +1,25 @@
-import { apiDelete, apiGet, apiPatch, apiPost, apiUpload } from "./client";
+import { apiDelete, apiGet, apiGetList, apiPatch, apiPost, apiUpload } from "./client";
 
 /** @returns {Promise<object>} the published SiteContent block; throws ApiError(404) if none */
 export const getSiteContent = (section) => apiGet(`/api/site-content/${section}/`);
 
 /** @returns {Promise<object[]>} published missions, newest first */
-export const getMissions = () => apiGet("/api/missions/");
+export const getMissions = () => apiGetList("/api/missions/");
 
 /** @returns {Promise<object>} a single published mission, full article included */
 export const getMission = (id) => apiGet(`/api/missions/${id}/`);
 
 /** @returns {Promise<object[]>} published gallery images, newest first */
-export const getGalleryImages = () => apiGet("/api/gallery/");
+export const getGalleryImages = () => apiGetList("/api/gallery/");
 
 /** @returns {Promise<object[]>} donate / social / email links, by display_order */
-export const getInvolvedLinks = () => apiGet("/api/get-involved/links/");
+export const getInvolvedLinks = () => apiGetList("/api/get-involved/links/");
 
 /** @returns {Promise<object[]>} published team members, by display_order */
-export const getTeamMembers = () => apiGet("/api/about/team/");
+export const getTeamMembers = () => apiGetList("/api/about/team/");
 
 /** @returns {Promise<object[]>} published testimonials, newest first */
-export const getTestimonials = () => apiGet("/api/testimonials/");
+export const getTestimonials = () => apiGetList("/api/testimonials/");
 
 /**
  * @param {{name: string, email: string, message: string}} payload
@@ -49,7 +49,7 @@ export const getMe = (token) => apiGet("/api/auth/me/", { token });
 // -- Mission Mondays -----------------------------------------------------
 
 /** @returns {Promise<object[]>} every mission (drafts included) */
-export const getAdminMissions = (token) => apiGet("/api/admin/missions/", { token });
+export const getAdminMissions = (token) => apiGetList("/api/admin/missions/", { token });
 
 export const getAdminMission = (id, token) => apiGet(`/api/admin/missions/${id}/`, { token });
 
@@ -79,7 +79,7 @@ export const deleteMissionPhoto = (photoId, token) =>
 // -- Gallery ---------------------------------------------------------------
 
 /** @returns {Promise<object[]>} every gallery entry (drafts included) */
-export const getAdminGalleryEntries = (token) => apiGet("/api/admin/gallery/", { token });
+export const getAdminGalleryEntries = (token) => apiGetList("/api/admin/gallery/", { token });
 
 export const getAdminGalleryEntry = (id, token) => apiGet(`/api/admin/gallery/${id}/`, { token });
 

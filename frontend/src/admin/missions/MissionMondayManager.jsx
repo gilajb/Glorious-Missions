@@ -3,21 +3,30 @@ import { Link } from "react-router-dom";
 
 import Icon from "../../components/Icon";
 import SafeImage from "../../components/SafeImage";
+import { ApiError } from "../../api/client";
 import { deleteMission, getAdminMissions, toggleMissionPublish } from "../../api/endpoints";
 import { useFetch } from "../../hooks/useFetch";
 import { useAuth } from "../AuthContext";
+
+function actionErrorMessage(err) {
+  return err instanceof ApiError ? err.message : "Something went wrong. Please try again.";
+}
 
 export default function MissionMondayManager() {
   const { token } = useAuth();
   const { data, loading, error, reload } = useFetch(() => getAdminMissions(token), [token]);
   const missions = data || [];
   const [busyId, setBusyId] = useState(null);
+  const [actionError, setActionError] = useState(null);
 
   const handleTogglePublish = async (id) => {
     setBusyId(id);
+    setActionError(null);
     try {
       await toggleMissionPublish(id, token);
       await reload();
+    } catch (err) {
+      setActionError(actionErrorMessage(err));
     } finally {
       setBusyId(null);
     }
@@ -26,9 +35,12 @@ export default function MissionMondayManager() {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this Mission Monday post? This cannot be undone.")) return;
     setBusyId(id);
+    setActionError(null);
     try {
       await deleteMission(id, token);
       await reload();
+    } catch (err) {
+      setActionError(actionErrorMessage(err));
     } finally {
       setBusyId(null);
     }
@@ -46,6 +58,12 @@ export default function MissionMondayManager() {
           New post
         </Link>
       </div>
+
+      {actionError && (
+        <p role="alert" className="font-body-sm text-body-sm text-error">
+          {actionError}
+        </p>
+      )}
 
       {loading ? (
         <p className="font-body-md text-body-md text-on-surface-variant">Loading…</p>

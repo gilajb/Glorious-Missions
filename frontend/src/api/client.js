@@ -125,6 +125,18 @@ export const apiPost = (path, body, options) => request(path, { ...options, meth
 export const apiPatch = (path, body, options) => request(path, { ...options, method: "PATCH", body });
 export const apiDelete = (path, options) => request(path, { ...options, method: "DELETE" });
 
+/**
+ * GET a DRF list endpoint and return just the array.
+ *
+ * The backend paginates every list endpoint (`{count, next, previous,
+ * results}`) so a growing table can't turn into one unbounded response.
+ * Nothing here pages through `next` yet -- PAGE_SIZE is generous enough
+ * that today's content never gets close to a second page -- so this just
+ * unwraps `results` centrally rather than every caller re-checking for it.
+ */
+export const apiGetList = (path, options) =>
+  apiGet(path, options).then((data) => data?.results ?? data ?? []);
+
 /** POST/PATCH a FormData body (file upload) with an admin token attached. */
 export const apiUpload = (path, formData, { token, method = "POST" } = {}) =>
   request(path, { method, formData, token });

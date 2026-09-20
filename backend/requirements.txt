@@ -5,6 +5,10 @@ dj-database-url==3.1.2
 psycopg[binary]==3.3.5
 cloudinary==1.46.2
 django-cloudinary-storage==0.3.0
+# Required by DRF's ImageField (django.forms.fields.ImageField.to_python
+# calls PIL.Image directly) to validate photo uploads are real images --
+# neither cloudinary package above pulls this in on its own.
+Pillow==12.3.0
 whitenoise==6.12.0
 gunicorn==26.2.0
 python-dotenv==1.2.3

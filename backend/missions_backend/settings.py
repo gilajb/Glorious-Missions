@@ -101,6 +101,9 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # Throttles POSTs to /admin/login/ -- see the class docstring for why
+    # this can't just be a DRF ScopedRateThrottle.
+    "core.middleware.AdminLoginThrottleMiddleware",
 ]
 
 TEMPLATES = [
@@ -225,7 +228,17 @@ REST_FRAMEWORK = {
         "contact": "5/hour",
         "get_involved": "5/hour",
         "login": "10/hour",
+        # Backstop for the whole staff admin API (keyed per-user, since these
+        # requests are always authenticated) against a leaked/compromised
+        # token running away, not a limit normal admin use should ever near.
+        "admin": "1000/hour",
     },
+    # Every list endpoint is paginated so a growing table (years of Mission
+    # Monday posts, gallery entries) can't turn into one unbounded response.
+    # PAGE_SIZE is generous because the frontend doesn't yet page through
+    # results -- see frontend/src/api/client.js's apiGetList.
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 200,
 }
 
 

@@ -42,7 +42,14 @@ export default function MissionMondayDetail() {
     );
   }
 
-  const cleanArticle = DOMPurify.sanitize(mission.article || "");
+  // Allow-list mirrors backend/core/sanitize.py's nh3 config -- the backend
+  // is the real gate (this already-sanitized HTML is what's stored), but a
+  // matching allow-list here means this second pass doesn't fall back to
+  // DOMPurify's much broader default set if the two ever drift.
+  const cleanArticle = DOMPurify.sanitize(mission.article || "", {
+    ALLOWED_TAGS: ["p", "strong", "em", "h2", "h3", "ul", "ol", "li", "blockquote", "a"],
+    ALLOWED_ATTR: ["href", "target"],
+  });
 
   return (
     <article className="max-w-3xl mx-auto px-margin-mobile py-space-2xl flex flex-col gap-space-lg">

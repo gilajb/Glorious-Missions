@@ -13,6 +13,7 @@ function pillClassName(isActive) {
 /**
  * "All" plus one pill per county, counts included. Pair with
  * useCountyFilter, which supplies `counties`/`countyCounts`/`selectedCounty`.
+ * Used by Missions only (Gallery has no county field).
  */
 export default function CountyFilterPills({
   counties,

@@ -16,6 +16,9 @@ class GalleryAdminViewSet(ModelViewSet):
     queryset = GalleryImage.objects.all()
     serializer_class = GalleryImageAdminSerializer
     permission_classes = [IsStaffUser]
+    # Backstop against a leaked/compromised staff token, not a normal-use
+    # limit -- see settings.REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"]["admin"].
+    throttle_scope = "admin"
 
     @action(detail=True, methods=["post"], url_path="toggle-publish")
     def toggle_publish(self, request, pk=None):
@@ -31,6 +34,7 @@ class GalleryPhotoListCreateView(generics.ListCreateAPIView):
     serializer_class = GalleryPhotoSerializer
     permission_classes = [IsStaffUser]
     parser_classes = [MultiPartParser, FormParser]
+    throttle_scope = "admin"
 
     def get_queryset(self):
         return GalleryPhoto.objects.filter(gallery_image_id=self.kwargs["gallery_id"])
@@ -48,3 +52,4 @@ class GalleryPhotoDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = GalleryPhotoSerializer
     permission_classes = [IsStaffUser]
     lookup_url_kwarg = "photo_id"
+    throttle_scope = "admin"

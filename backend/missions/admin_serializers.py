@@ -2,13 +2,16 @@ from rest_framework import serializers
 
 from core.fields import CloudinaryImageURLField
 from core.sanitize import sanitize_article_html
+from core.validators import validate_image_file_size
 from missions.models import Mission, MissionPhoto
 
 
 class MissionPhotoSerializer(serializers.ModelSerializer):
     """Read/write for one photo: upload a file to create, PATCH to reorder."""
 
-    image = serializers.ImageField(write_only=True, required=False)
+    image = serializers.ImageField(
+        write_only=True, required=False, validators=[validate_image_file_size]
+    )
     image_url = CloudinaryImageURLField(source="image")
 
     class Meta:

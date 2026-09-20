@@ -27,3 +27,15 @@ def validate_video_url(value):
             "Enter a YouTube (youtube.com/watch?v=..., youtu.be/...) "
             "or Vimeo (vimeo.com/...) video URL."
         )
+
+
+MAX_IMAGE_UPLOAD_SIZE = 10 * 1024 * 1024  # 10 MB
+
+
+def validate_image_file_size(value):
+    """Caps a single photo upload so one staff request (or a compromised
+    staff token) can't consume unbounded server/Cloudinary resources."""
+    if value.size > MAX_IMAGE_UPLOAD_SIZE:
+        raise ValidationError(
+            f"Image must be {MAX_IMAGE_UPLOAD_SIZE // (1024 * 1024)}MB or smaller."
+        )

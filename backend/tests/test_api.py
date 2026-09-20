@@ -17,6 +17,7 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 from rest_framework.authtoken.models import Token
+from rest_framework.throttling import ScopedRateThrottle
 
 from contact.models import ContactSubmission
 from core.models import SiteContent, TeamMember, Testimonial
@@ -72,7 +73,7 @@ class PublishedFilteringTests(TestCase):
         response = self.client.get("/api/missions/")
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual([row["title"] for row in response.json()], ["Live"])
+        self.assertEqual([row["title"] for row in response.json()["results"]], ["Live"])
 
     def test_gallery_returns_only_published_rows(self):
         GalleryImage.objects.create(image="live-sample", published=True)
@@ -81,14 +82,14 @@ class PublishedFilteringTests(TestCase):
         response = self.client.get("/api/gallery/")
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.json()), 1)
+        self.assertEqual(len(response.json()["results"]), 1)
 
     def test_gallery_image_is_serialised_as_a_url(self):
         cloudinary.config(cloud_name="test-cloud")
         self.addCleanup(cloudinary.config, cloud_name=None)
         GalleryImage.objects.create(image="sample", published=True)
 
-        image = self.client.get("/api/gallery/").json()[0]["image"]
+        image = self.client.get("/api/gallery/").json()["results"][0]["image"]
 
         self.assertEqual(
             image, "https://res.cloudinary.com/test-cloud/image/upload/sample"
@@ -102,12 +103,12 @@ class PublishedFilteringTests(TestCase):
             response = self.client.get("/api/gallery/")
 
         self.assertEqual(response.status_code, 200)
-        self.assertIsNone(response.json()[0]["image"])
+        self.assertIsNone(response.json()["results"][0]["image"])
 
     def test_missing_image_serialises_as_null(self):
         Mission.objects.create(title="Live", summary="s", published=True)
 
-        self.assertIsNone(self.client.get("/api/missions/").json()[0]["image"])
+        self.assertIsNone(self.client.get("/api/missions/").json()["results"][0]["image"])
 
     def test_mission_serialises_county_and_dates(self):
         Mission.objects.create(
@@ -118,7 +119,7 @@ class PublishedFilteringTests(TestCase):
             published=True,
         )
 
-        row = self.client.get("/api/missions/").json()[0]
+        row = self.client.get("/api/missions/").json()["results"][0]
         self.assertEqual(row["county"], "Nairobi")
         self.assertEqual(row["start_date"], "2021-03-01")
         self.assertIsNone(row["end_date"])
@@ -131,7 +132,7 @@ class PublishedFilteringTests(TestCase):
         response = self.client.get("/api/about/team/")
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual([row["name"] for row in response.json()], ["First", "Second"])
+        self.assertEqual([row["name"] for row in response.json()["results"]], ["First", "Second"])
 
     def test_testimonials_returns_only_published_rows_newest_first(self):
         old = Testimonial.objects.create(quote="Old", author_name="A", published=True)
@@ -148,7 +149,7 @@ class PublishedFilteringTests(TestCase):
         response = self.client.get("/api/testimonials/")
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual([row["quote"] for row in response.json()], ["New", "Old"])
+        self.assertEqual([row["quote"] for row in response.json()["results"]], ["New", "Old"])
 
     def test_get_involved_links_are_ordered_by_display_order(self):
         GetInvolvedLink.objects.create(
@@ -162,8 +163,16 @@ class PublishedFilteringTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
-            [row["title"] for row in response.json()], ["First", "Second"]
+            [row["title"] for row in response.json()["results"]], ["First", "Second"]
         )
+
+    def test_missions_list_is_paginated(self):
+        Mission.objects.create(title="Live", summary="s", published=True)
+
+        body = self.client.get("/api/missions/").json()
+
+        self.assertEqual(set(body.keys()), {"count", "next", "previous", "results"})
+        self.assertEqual(body["count"], 1)
 
 
 @override_settings(
@@ -302,6 +311,74 @@ class ThrottlingTests(TestCase):
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200)
 
+    def test_login_endpoint_429s_after_the_limit(self):
+        rate = settings.REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"]["login"]
+        limit = int(rate.split("/")[0])
+        url = reverse("accounts:login")
+        payload = {"username": "nobody", "password": "wrong"}
+
+        for _ in range(limit):
+            response = self.client.post(url, payload, content_type="application/json")
+            self.assertEqual(response.status_code, 400)
+
+        response = self.client.post(url, payload, content_type="application/json")
+
+        self.assertEqual(response.status_code, 429)
+
+
+class AdminLoginThrottleMiddlewareTests(TestCase):
+    """django.contrib.admin's own /admin/login/ shares the "login" rate."""
+
+    def setUp(self):
+        cache.clear()
+        self.limit = int(
+            settings.REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"]["login"].split("/")[0]
+        )
+
+    def test_admin_login_429s_after_the_limit(self):
+        payload = {"username": "nobody", "password": "wrong"}
+
+        for _ in range(self.limit):
+            response = self.client.post("/admin/login/", payload)
+            self.assertNotEqual(response.status_code, 429)
+
+        response = self.client.post("/admin/login/", payload)
+
+        self.assertEqual(response.status_code, 429)
+
+    def test_admin_login_get_is_never_throttled(self):
+        for _ in range(self.limit + 5):
+            self.assertEqual(self.client.get("/admin/login/").status_code, 200)
+
+
+class AdminApiThrottlingTests(TestCase):
+    """The staff admin API is throttled (backstop against a leaked token).
+
+    Overriding settings.REST_FRAMEWORK at test time doesn't reliably reach
+    ScopedRateThrottle: it snapshots DEFAULT_THROTTLE_RATES into a plain
+    class attribute at import time, which `override_settings` doesn't
+    re-trigger. Patching that class attribute directly is the rate DRF
+    actually reads at request time.
+    """
+
+    def setUp(self):
+        cache.clear()
+        staff = User.objects.create_user(username="admin", password="x", is_staff=True)
+        self.auth_header = {
+            "HTTP_AUTHORIZATION": f"Token {Token.objects.create(user=staff).key}"
+        }
+
+    def test_admin_api_429s_after_the_limit(self):
+        patched_rates = {**ScopedRateThrottle.THROTTLE_RATES, "admin": "2/hour"}
+        with mock.patch.object(ScopedRateThrottle, "THROTTLE_RATES", patched_rates):
+            for _ in range(2):
+                response = self.client.get("/api/admin/missions/", **self.auth_header)
+                self.assertEqual(response.status_code, 200)
+
+            response = self.client.get("/api/admin/missions/", **self.auth_header)
+
+        self.assertEqual(response.status_code, 429)
+
 
 class HealthCheckTests(TestCase):
     def test_healthz(self):
@@ -408,6 +485,22 @@ class AdminMissionApiTests(TestCase):
         )
         self.assertEqual(response.status_code, 401)
 
+    def test_authenticated_non_staff_user_is_rejected(self):
+        non_staff = User.objects.create_user(username="visitor", password="x", is_staff=False)
+        non_staff_header = {
+            "HTTP_AUTHORIZATION": f"Token {Token.objects.create(user=non_staff).key}"
+        }
+
+        response = self.client.post(
+            "/api/admin/missions/",
+            {"title": "Draft", "summary": "s"},
+            content_type="application/json",
+            **non_staff_header,
+        )
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(Mission.objects.count(), 0)
+
     def test_authenticated_staff_can_create_a_draft_and_it_stays_hidden(self):
         response = self.client.post(
             "/api/admin/missions/",
@@ -419,7 +512,7 @@ class AdminMissionApiTests(TestCase):
         self.assertEqual(response.status_code, 201, response.content)
         self.assertEqual(Mission.objects.count(), 1)
         # Not published -> invisible on the public endpoint.
-        self.assertEqual(self.client.get("/api/missions/").json(), [])
+        self.assertEqual(self.client.get("/api/missions/").json()["results"], [])
 
     def test_toggle_publish_makes_it_visible_publicly(self):
         mission = Mission.objects.create(title="Draft", summary="s", published=False)
@@ -431,7 +524,8 @@ class AdminMissionApiTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.json()["published"])
         self.assertEqual(
-            [row["title"] for row in self.client.get("/api/missions/").json()], ["Draft"]
+            [row["title"] for row in self.client.get("/api/missions/").json()["results"]],
+            ["Draft"],
         )
 
     def test_rejects_a_non_youtube_vimeo_video_url(self):
@@ -491,7 +585,7 @@ class AdminMissionApiTests(TestCase):
             self.assertEqual(response.status_code, 201, response.content)
 
         self.assertEqual(MissionPhoto.objects.filter(mission=mission).count(), 2)
-        photos = self.client.get("/api/missions/").json()[0]["photos"]
+        photos = self.client.get("/api/missions/").json()["results"][0]["photos"]
         self.assertEqual([p["order"] for p in photos], [0, 1])
 
     @mock.patch("cloudinary.uploader.upload_resource")
@@ -511,6 +605,36 @@ class AdminMissionApiTests(TestCase):
 
         self.assertEqual(response.status_code, 204)
         self.assertFalse(MissionPhoto.objects.filter(pk=photo.pk).exists())
+
+    def test_non_image_upload_is_rejected(self):
+        mission = Mission.objects.create(title="M", summary="s")
+        not_an_image = SimpleUploadedFile(
+            "notes.txt", b"just some text", content_type="text/plain"
+        )
+
+        response = self.client.post(
+            f"/api/admin/missions/{mission.pk}/photos/",
+            {"image": not_an_image},
+            **self.auth_header,
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("image", response.json())
+        self.assertEqual(MissionPhoto.objects.filter(mission=mission).count(), 0)
+
+    def test_oversized_image_upload_is_rejected(self):
+        mission = Mission.objects.create(title="M", summary="s")
+
+        with mock.patch("core.validators.MAX_IMAGE_UPLOAD_SIZE", 10):
+            response = self.client.post(
+                f"/api/admin/missions/{mission.pk}/photos/",
+                {"image": _tiny_upload()},
+                **self.auth_header,
+            )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("image", response.json())
+        self.assertEqual(MissionPhoto.objects.filter(mission=mission).count(), 0)
 
 
 class AdminGalleryApiTests(TestCase):
@@ -538,7 +662,7 @@ class AdminGalleryApiTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 201, response.content)
-        self.assertEqual(self.client.get("/api/gallery/").json(), [])
+        self.assertEqual(self.client.get("/api/gallery/").json()["results"], [])
 
     @mock.patch("cloudinary.uploader.upload_resource")
     def test_adding_a_photo_reflects_on_the_public_endpoint(self, upload_resource):
@@ -553,5 +677,5 @@ class AdminGalleryApiTests(TestCase):
 
         self.assertEqual(response.status_code, 201, response.content)
         self.assertEqual(GalleryPhoto.objects.filter(gallery_image=entry).count(), 1)
-        row = self.client.get("/api/gallery/").json()[0]
+        row = self.client.get("/api/gallery/").json()["results"][0]
         self.assertEqual(len(row["photos"]), 1)

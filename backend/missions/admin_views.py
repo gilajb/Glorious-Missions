@@ -16,6 +16,9 @@ class MissionAdminViewSet(ModelViewSet):
     queryset = Mission.objects.all()
     serializer_class = MissionAdminSerializer
     permission_classes = [IsStaffUser]
+    # Backstop against a leaked/compromised staff token, not a normal-use
+    # limit -- see settings.REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"]["admin"].
+    throttle_scope = "admin"
 
     @action(detail=True, methods=["post"], url_path="toggle-publish")
     def toggle_publish(self, request, pk=None):
@@ -31,6 +34,7 @@ class MissionPhotoListCreateView(generics.ListCreateAPIView):
     serializer_class = MissionPhotoSerializer
     permission_classes = [IsStaffUser]
     parser_classes = [MultiPartParser, FormParser]
+    throttle_scope = "admin"
 
     def get_queryset(self):
         return MissionPhoto.objects.filter(mission_id=self.kwargs["mission_id"])
@@ -48,3 +52,4 @@ class MissionPhotoDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = MissionPhotoSerializer
     permission_classes = [IsStaffUser]
     lookup_url_kwarg = "photo_id"
+    throttle_scope = "admin"

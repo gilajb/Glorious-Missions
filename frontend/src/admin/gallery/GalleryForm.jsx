@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
+import { ApiError } from "../../api/client";
 import {
   addGalleryPhoto,
   deleteGalleryEntry,
@@ -11,6 +12,10 @@ import {
 } from "../../api/endpoints";
 import { useAuth } from "../AuthContext";
 import PhotoUploader from "../components/PhotoUploader";
+
+function actionErrorMessage(err) {
+  return err instanceof ApiError ? err.message : "Something went wrong. Please try again.";
+}
 
 /**
  * A gallery entry has no fields of its own beyond its photos and publish
@@ -26,6 +31,7 @@ export default function GalleryForm() {
 
   const [entry, setEntry] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [actionError, setActionError] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -54,9 +60,12 @@ export default function GalleryForm() {
 
   const handleTogglePublish = async () => {
     setBusy(true);
+    setActionError(null);
     try {
       await toggleGalleryPublish(id, token);
       await refresh();
+    } catch (err) {
+      setActionError(actionErrorMessage(err));
     } finally {
       setBusy(false);
     }
@@ -65,10 +74,12 @@ export default function GalleryForm() {
   const handleDelete = async () => {
     if (!window.confirm("Delete this gallery entry? This cannot be undone.")) return;
     setBusy(true);
+    setActionError(null);
     try {
       await deleteGalleryEntry(id, token);
       navigate("/admin/gallery");
-    } finally {
+    } catch (err) {
+      setActionError(actionErrorMessage(err));
       setBusy(false);
     }
   };
@@ -88,6 +99,12 @@ export default function GalleryForm() {
           Back to gallery
         </Link>
       </div>
+
+      {actionError && (
+        <p role="alert" className="font-body-sm text-body-sm text-error">
+          {actionError}
+        </p>
+      )}
 
       <div className="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
         <div className="flex items-center justify-between">
