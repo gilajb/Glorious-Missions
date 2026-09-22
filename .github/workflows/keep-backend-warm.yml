@@ -1,0 +1,17 @@
+name: Keep backend warm
+
+# Render's free plan spins missions-backend down after ~15 min of no
+# traffic, so the first real visitor request after that pays a 30-60s+
+# cold-start penalty. Pinging the health endpoint every 10 minutes keeps
+# it inside that window so it never spins down during normal hours.
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping backend health endpoint
+        run: curl -sf --max-time 30 https://missions-backend.onrender.com/healthz/
