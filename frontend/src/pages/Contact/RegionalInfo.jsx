@@ -91,7 +91,7 @@ export default function RegionalInfo() {
               <Icon name="more_horiz" className="text-[20px]" />
             </div>
             <p className="font-body-sm text-body-sm text-on-surface-variant flex-1">
-              A phone line and public email are on the way — for now, the form below is the
+              A phone line and public email are on the way. For now, the form below is the
               fastest way to reach us.
             </p>
           </div>

@@ -88,7 +88,7 @@ export default function Pillars() {
               </p>
               <div className="flex flex-col gap-space-xs pt-space-xxs">
                 {failed || donateLinks.length === 0 ? (
-                  <EmptyRow>Giving channels are being set up — check back soon.</EmptyRow>
+                  <EmptyRow>Giving channels are being set up. Check back soon.</EmptyRow>
                 ) : (
                   donateLinks.map((link) => (
                     <a

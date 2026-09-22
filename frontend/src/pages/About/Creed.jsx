@@ -30,16 +30,14 @@ export default function Creed() {
             </p>
             <div className="h-[1px] w-full bg-surface-variant my-space-xs" />
             <p>
-              We affirm the historic Christian faith rooted in the Holy Scriptures: that God so
-              loved the world that He gave His only Son, Jesus Christ, to redeem all humanity and
-              restore the broken creation.
+              We affirm the historic Christian faith: that God so loved the world He gave His
+              only Son to redeem humanity and restore creation.
             </p>
             <p>
-              Our mission is not colonialism wrapped in Christian vocabulary; it is the joyful
+              Our mission is not colonialism in Christian vocabulary. It's the joyful
               proclamation of Christ's kingdom through servant hands. We honor local culture,
-              songs, languages, and tribal traditions that reflect God's magnificent creative
-              diversity. We go where we are invited, we listen before we speak, and we remain
-              steadfast through trial and seasons of drought.
+              language, and tradition as reflections of God's creativity. We go where we're
+              invited, listen before we speak, and stay steadfast through trial and drought.
             </p>
           </div>
         </div>

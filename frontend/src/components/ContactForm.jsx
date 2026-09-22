@@ -37,7 +37,7 @@ function formatRetryAfter(seconds) {
 export default function ContactForm({
   onSubmit,
   submitLabel = "Send Message",
-  successMessage = "Thank you — we've received your message and will be in touch soon.",
+  successMessage = "Thank you. We've received your message and will be in touch soon.",
   nameLabel = "Name",
   emailLabel = "Email",
   messageLabel = "Message",

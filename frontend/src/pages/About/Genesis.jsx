@@ -18,24 +18,17 @@ export default function Genesis() {
             </h2>
             <div className="flex flex-col gap-space-md font-body-md text-body-md text-on-surface-variant leading-relaxed">
               <p>
-                In mid-2014, a documentary team from Glorious Photography Pictures journeyed
-                through Samburu and Marsabit to document rural life. Instead of helplessness, they
-                encountered communities of profound resilience, radiant hospitality, and vibrant
-                local fellowships worshipping together under the open sky.
+                In 2014, a documentary team from Glorious Photography Pictures traveled through
+                Samburu and Marsabit, and found not helplessness, but resilience, hospitality,
+                and vibrant local fellowships worshipping under the open sky.
               </p>
               <p>
-                Yet western mission media too often relied on grim caricatures—images
-                intentionally desaturated, focused solely on deprivation to trigger impulsive
-                donations. We resolved that this was not merely unethical journalism; it was a
-                theological failure that ignored the <strong>Imago Dei</strong> (the Image of
-                God) within our brothers and sisters.
-              </p>
-              <p>
-                Out of this spiritual friction, Glorious Missions was born. We unified
-                documentary-grade photography with long-term, relational ministry: walking
-                alongside indigenous evangelists, discipling local church leaders, and supplying
-                vernacular Bibles—while honoring every local elder, mother, and child through
-                photographic truth.
+                Too much mission media relies on grim, desaturated images of deprivation to drive
+                donations, ignoring the <strong>Imago Dei</strong>, the Image of God, in the
+                people it photographs. Glorious Missions was born from that conviction:
+                documentary-grade photography paired with long-term, relational ministry,
+                discipling local leaders, supplying vernacular Bibles, and honoring every elder,
+                mother, and child through photographic truth.
               </p>
             </div>
           </div>

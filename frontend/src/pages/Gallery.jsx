@@ -28,7 +28,7 @@ export default function Gallery() {
             Visual Chronicles of Grace
           </h1>
           <p className="font-body-md text-body-md text-on-surface-variant max-w-2xl">
-            Honoring God's work through reverent visual storytelling — photographs from communities
+            Honoring God's work through reverent visual storytelling: photographs from communities
             across Kenya, documenting faith, fellowship, and everyday life.
           </p>
         </div>
@@ -43,7 +43,7 @@ export default function Gallery() {
                 Our photo archive is just getting started
               </h2>
               <p className="font-body-md text-body-md text-on-surface-variant max-w-md">
-                New photographs are added as they're documented in the field — check back soon.
+                New photographs are added as they're documented in the field. Check back soon.
               </p>
             </div>
           ) : (

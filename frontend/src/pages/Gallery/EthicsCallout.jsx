@@ -15,10 +15,9 @@ export default function EthicsCallout() {
               Dignity-First Visual Ministry
             </h3>
             <p className="font-body-md text-body-md text-on-surface-variant">
-              Every photograph published by Glorious Photography Pictures is captured with
-              informed consent, cultural deference, and relational accountability. We do not
-              photograph hardship for emotional exploitation; we document faith, community, and
-              the dignity of the people we serve.
+              Every photograph is captured with informed consent, cultural deference, and
+              relational accountability. We don't photograph hardship for emotional exploitation.
+              We document faith, community, and dignity.
             </p>
           </div>
           <div className="flex items-center gap-space-sm bg-surface-container-lowest p-space-md rounded-xl shadow-sm w-fit max-w-full">

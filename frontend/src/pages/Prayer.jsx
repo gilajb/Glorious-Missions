@@ -53,7 +53,7 @@ export default function Prayer() {
                 emailLabel="Email Address"
                 messageLabel="Your Prayer Request"
                 messagePlaceholder="Share what's on your heart..."
-                successMessage="Thank you — your request has been received, and our team will be praying."
+                successMessage="Thank you. Your request has been received, and our team will be praying."
               />
             </div>
           </div>
@@ -64,7 +64,7 @@ export default function Prayer() {
                 What We Mean by Discipleship
               </h3>
               <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
-                Walking alongside local churches and believers as they grow in faith — supported
+                Walking alongside local churches and believers as they grow in faith, supported
                 by prayer and relationship, not a fixed program.
               </p>
             </div>

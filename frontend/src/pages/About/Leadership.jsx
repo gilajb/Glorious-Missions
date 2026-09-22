@@ -81,7 +81,7 @@ export default function Leadership() {
           <div className="flex flex-col items-center text-center gap-space-xs py-space-2xl bg-surface-container-low rounded-xl">
             <Icon name="groups" className="text-[32px] text-outline" />
             <p className="font-body-md text-body-md text-on-surface-variant">
-              Team profiles are being prepared — check back soon.
+              Team profiles are being prepared. Check back soon.
             </p>
           </div>
         ) : (

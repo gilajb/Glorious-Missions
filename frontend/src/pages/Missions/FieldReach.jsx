@@ -12,13 +12,13 @@ export default function FieldReach({ missionCount, countyCount, loading }) {
           Live Field Reach
         </span>
         <span className="font-headline-sm text-headline-sm text-tertiary font-bold">
-          {loading ? "—" : `${missionCount} Mission Monday${missionCount === 1 ? "" : "s"}`}
+          {loading ? "…" : `${missionCount} Mission Monday${missionCount === 1 ? "" : "s"}`}
         </span>
       </div>
       <div className="flex justify-between font-label-sm text-label-sm text-on-surface-variant pt-space-xxs">
         <span>Active across Kenya</span>
         <span className="text-primary font-semibold">
-          {loading ? "—" : `${countyCount} Count${countyCount === 1 ? "y" : "ies"}`}
+          {loading ? "…" : `${countyCount} Count${countyCount === 1 ? "y" : "ies"}`}
         </span>
       </div>
     </div>

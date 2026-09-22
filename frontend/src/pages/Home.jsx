@@ -13,7 +13,7 @@ import Testimonial from "./Home/Testimonial";
 // hasn't filled in the admin yet.
 const FALLBACK_HERO = {
   title: "Witnessing Hope Across Kenya",
-  body: "We honor indigenous communities through dignifying documentary photography, relational discipleship, and faithful presence in prayer. From Nairobi's neighborhoods to the pastoral plains of Marsabit and Samburu, we walk alongside local churches, plant new fellowships, and carry these stories of faith to the world.",
+  body: "We honor indigenous communities through documentary photography, relational discipleship, and faithful prayer, walking alongside local churches from Nairobi to the plains of Marsabit and Samburu.",
 };
 
 export default function Home() {

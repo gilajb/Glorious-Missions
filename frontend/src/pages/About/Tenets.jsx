@@ -10,7 +10,7 @@ const TENETS = [
     label: "Tenet One",
     title: "Compassion in Action",
     description:
-      "Faith must never remain theoretical. As taught in the Epistle of James, faith without tangible works is dead. We do not arrive with solely words; we show up in person, walk alongside local churches through hardship and joy alike, and give practically as needs arise.",
+      "Faith without works is dead, as James teaches. We don't arrive with words alone. We show up, walk alongside local churches through hardship and joy, and give practically as needs arise.",
     verseRef: "James 2:16",
     verseText:
       "“If one of you says, 'Go in peace; keep warm and well fed,' but does nothing about their physical needs, what good is it?”",
@@ -24,7 +24,7 @@ const TENETS = [
     label: "Tenet Two",
     title: "Community Autonomy",
     description:
-      "We reject paternalistic Western intervention. We do not plant parallel hierarchies; we support indigenous pastors and council elders who know the land and their people intimately. Every initiative is led by, and handed over entirely to, local leadership.",
+      "We reject paternalistic intervention. Rather than build parallel hierarchies, we support the indigenous pastors and elders who know their people best. Every initiative is led by, and handed to, local leadership.",
     verseRef: "1 Thessalonians 5:12",
     verseText:
       "“Honor those who work hard among you, who care for you in the Lord and who admonish you.”",
@@ -38,7 +38,7 @@ const TENETS = [
     label: "Tenet Three",
     title: "Truthful Documentation",
     description:
-      "Visual storytelling is sacred stewardship. We refuse staged grief, fabricated drama, or pity-exploiting media tropes. Our images portray human joy, radiant beauty, cultural elegance, and honest hardship with transparency, always preserving the sacred privacy and dignity of every subject.",
+      "Visual storytelling is sacred stewardship. We refuse staged grief or pity-exploiting tropes. Our images show joy, beauty, and honest hardship with transparency, always preserving the dignity of every subject.",
     verseRef: "Ephesians 4:25",
     verseText:
       "“Therefore each of you must put off falsehood and speak truthfully to your neighbor, for we are all members of one body.”",

@@ -21,9 +21,8 @@ export default function Contact() {
             Karibu Sana. Reach Out in Fellowship.
           </h1>
           <p className="font-body-lg text-body-lg text-on-surface-variant mt-space-xs">
-            Whether you seek partnership in ministry, wish to invite documentary field coverage,
-            or simply desire a team to stand with you in prayer, our doors and hearts are wide
-            open.
+            Whether it's ministry partnership, field coverage, or prayer, our doors and hearts
+            are open.
           </p>
         </div>
       </section>

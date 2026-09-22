@@ -69,7 +69,7 @@ export default function Missions() {
             <div className="flex flex-col items-center text-center gap-space-xs py-space-2xl bg-surface-container-low rounded-xl">
               <Icon name="explore_off" className="text-[32px] text-outline" />
               <p className="font-body-md text-body-md text-on-surface-variant">
-                No Mission Monday posts to show right now — check back soon.
+                No Mission Monday posts to show right now. Check back soon.
               </p>
             </div>
           ) : filteredMissions.length === 0 && !loading ? (

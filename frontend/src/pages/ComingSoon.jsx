@@ -8,7 +8,7 @@ import Icon from "../components/Icon";
  * correspond to anything. Both are minimal by design; this one just says
  * "coming soon" instead of "not found."
  */
-export default function ComingSoon({ title, description = "This story is coming soon — check back shortly." }) {
+export default function ComingSoon({ title, description = "This story is coming soon. Check back shortly." }) {
   return (
     <div className="w-full max-w-[1320px] mx-auto px-margin-mobile md:px-margin-tablet lg:px-margin-desktop py-space-4xl flex flex-col items-center text-center gap-space-md">
       <Icon name="hourglass_top" className="text-[32px] text-outline" />
