@@ -1,7 +1,16 @@
+import { Link } from "react-router-dom";
+
 import { getTeamMembers } from "../../api/endpoints";
 import Icon from "../../components/Icon";
 import SafeImage from "../../components/SafeImage";
 import { useFetch } from "../../hooks/useFetch";
+
+const PATHWAYS = [
+  { label: "Prayer Partner", to: "/prayer", icon: "church" },
+  { label: "Field Partner", to: "/get-involved", icon: "hiking" },
+  { label: "Media & Documentary Partner", to: "/get-involved#volunteer-form", icon: "camera" },
+  { label: "Community Partner", to: "/get-involved#community-channels", icon: "diversity_3" },
+];
 
 function MemberCard({ member }) {
   return (
@@ -73,8 +82,20 @@ export default function Leadership() {
           </h2>
           <p className="font-body-md text-body-md text-on-surface-variant">
             Meet the photographers, indigenous evangelists, and logistics stewards who guide
-            Glorious Missions across East Africa.
+            Mission Monday across East Africa.
           </p>
+          <div className="flex flex-wrap gap-space-xs pt-space-md">
+            {PATHWAYS.map((pathway) => (
+              <Link
+                key={pathway.label}
+                to={pathway.to}
+                className="inline-flex items-center gap-space-xs px-space-sm py-space-xxs rounded-full bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors font-label-sm text-label-sm"
+              >
+                <Icon name={pathway.icon} className="text-[16px]" />
+                <span>{pathway.label}</span>
+              </Link>
+            ))}
+          </div>
         </div>
 
         {showEmptyState ? (

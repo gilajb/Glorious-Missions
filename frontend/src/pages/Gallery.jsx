@@ -21,15 +21,15 @@ export default function Gallery() {
           <div className="flex items-center gap-space-xs">
             <span className="w-2 h-2 rounded-full bg-primary inline-block" />
             <span className="font-label-sm text-label-sm text-primary uppercase tracking-widest">
-              Documentary Archive
+              Mission Monday Visual Archive
             </span>
           </div>
           <h1 className="font-display text-headline-lg text-on-surface">
             Visual Chronicles of Grace
           </h1>
           <p className="font-body-md text-body-md text-on-surface-variant max-w-2xl">
-            Honoring God's work through reverent visual storytelling: photographs from communities
-            across Kenya, documenting faith, fellowship, and everyday life.
+            Honoring God's redemptive work through reverent visual storytelling, documenting
+            faith, fellowship, and everyday life across the communities we serve.
           </p>
         </div>
       </section>
@@ -40,10 +40,10 @@ export default function Gallery() {
             <div className="flex flex-col items-center text-center gap-space-sm py-space-3xl bg-surface-container-low rounded-xl">
               <Icon name="photo_camera" className="text-[40px] text-outline" />
               <h2 className="font-headline-sm text-headline-sm text-on-surface">
-                Our photo archive is just getting started
+                New photographs, added as they're documented in the field
               </h2>
               <p className="font-body-md text-body-md text-on-surface-variant max-w-md">
-                New photographs are added as they're documented in the field. Check back soon.
+                Check back soon as our field team documents more of God's work.
               </p>
             </div>
           ) : (

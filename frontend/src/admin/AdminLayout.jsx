@@ -26,7 +26,7 @@ export default function AdminLayout() {
       <aside className="w-64 shrink-0 bg-surface-container-lowest border-r border-surface-container-high flex flex-col p-space-md gap-space-lg">
         <div className="px-space-sm pt-space-xs">
           <p className="font-headline-sm text-headline-sm text-on-surface">Admin</p>
-          <p className="font-body-sm text-body-sm text-on-surface-variant">Glorious Missions</p>
+          <p className="font-body-sm text-body-sm text-on-surface-variant">Mission Monday</p>
         </div>
 
         <nav className="flex flex-col gap-space-xxs">

@@ -22,7 +22,7 @@ export const getTeamMembers = () => apiGetList("/api/about/team/");
 export const getTestimonials = () => apiGetList("/api/testimonials/");
 
 /**
- * @param {{name: string, email: string, message: string}} payload
+ * @param {{name: string, email: string, message: string, involvement_interest?: string}} payload
  * @returns {Promise<object>} the created ContactSubmission
  */
 export const submitContact = (payload) => apiPost("/api/contact/", payload);

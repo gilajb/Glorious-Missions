@@ -9,7 +9,7 @@ import { useFetch } from "../../hooks/useFetch";
 const FALLBACK_TESTIMONIAL = {
   quote:
     "Our partners consistently share how this ministry's photography and practical care restore dignity to every community it serves.",
-  author_name: "Glorious Missions",
+  author_name: "Mission Monday",
   author_role: "Field Team",
 };
 

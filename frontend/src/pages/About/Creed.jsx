@@ -39,6 +39,10 @@ export default function Creed() {
               language, and tradition as reflections of God's creativity. We go where we're
               invited, listen before we speak, and stay steadfast through trial and drought.
             </p>
+            <p>
+              Practical service is not the whole of our calling. It is Christian love in action,
+              flowing from the Gospel we proclaim.
+            </p>
           </div>
         </div>
 

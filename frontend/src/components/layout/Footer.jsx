@@ -43,10 +43,10 @@ export default function Footer() {
           <div className="lg:col-span-5 flex flex-col gap-space-md">
             <div className="flex items-center gap-space-sm">
               <div className="h-8 w-8 rounded-lg bg-primary-container flex items-center justify-center text-on-primary font-headline-sm font-bold">
-                G
+                M
               </div>
               <span className="font-headline-sm text-headline-sm text-white tracking-tight">
-                Glorious Missions
+                Mission Monday
               </span>
             </div>
             <p className="font-body-sm text-body-sm text-[#d0c4be] leading-relaxed max-w-sm">
@@ -125,12 +125,13 @@ export default function Footer() {
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-space-sm font-body-sm text-body-sm text-[#a1a1aa]">
           <p>
-            &copy; {new Date().getFullYear()} Glorious Missions (Glorious Photography Pictures).
+            &copy; {new Date().getFullYear()} Mission Monday, a Glorious Photography Pictures
+            initiative.
           </p>
           <div className="flex items-center gap-space-md font-label-sm text-label-sm">
             <span>Faith, Hope &amp; Compassion</span>
             <span>&bull;</span>
-            <span>Kenya Outreach</span>
+            <span>Sent to the Nations</span>
           </div>
         </div>
       </div>

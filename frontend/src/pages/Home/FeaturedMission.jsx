@@ -66,7 +66,7 @@ export default function FeaturedMission() {
                 {showEmptyState ? (
                   <>
                     <h3 className="font-headline-lg text-headline-lg text-on-surface mb-space-md">
-                      New Mission Mondays Coming Soon
+                      Next Mission Monday
                     </h3>
                     <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed mb-space-lg">
                       We're preparing our next field dispatch. Visit the Mission Mondays page to

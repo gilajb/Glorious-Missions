@@ -37,7 +37,7 @@ export default function Navbar() {
     <>
       <header className="fixed top-0 left-0 right-0 z-50 bg-surface/95 backdrop-blur-md shadow-[0_2px_12px_rgba(26,23,21,0.04)]">
         <div className="h-20 w-full px-margin-mobile md:px-margin-tablet lg:px-margin-desktop max-w-[1320px] mx-auto flex items-center justify-between gap-space-md">
-          <NavLink to="/" aria-label="Glorious Missions home">
+          <NavLink to="/" aria-label="Mission Monday home">
             <Logo />
           </NavLink>
 

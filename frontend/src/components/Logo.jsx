@@ -12,11 +12,11 @@ export default function Logo({ size = "md" }) {
       <div
         className={`${isSmall ? "h-7 w-7" : "h-8 w-8"} shrink-0 rounded-lg bg-primary-container flex items-center justify-center text-on-primary font-headline-sm font-bold`}
       >
-        G
+        M
       </div>
       <div className="flex flex-col leading-none">
         <span className="font-headline-sm text-headline-sm text-on-surface leading-none tracking-tight">
-          Glorious Missions
+          Mission Monday
         </span>
       </div>
     </div>

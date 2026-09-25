@@ -18,7 +18,7 @@ export default function VolunteerForm() {
           </span>
           <h2 className="font-headline-md text-headline-md text-on-surface">Volunteer &amp; Partner</h2>
           <p className="font-body-sm text-body-sm text-on-surface-variant">
-            Let us know how your gifts and calling align with Glorious Missions.
+            Let us know how your gifts and calling align with Mission Monday.
           </p>
         </div>
 

@@ -54,7 +54,7 @@ export default function PhotoPreview() {
               Authentic Documentation
             </span>
             <h2 className="font-headline-lg text-headline-lg text-on-surface">
-              Moments of Grace Captured
+              Stories of the Gospel
             </h2>
             <p className="font-body-md text-body-md text-on-surface-variant mt-space-xs max-w-xl">
               Through the lens of Glorious Photography Pictures, we document faith and fellowship

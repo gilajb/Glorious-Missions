@@ -29,7 +29,7 @@ export default function Hero() {
         </h1>
         <p className="font-body-lg text-body-lg text-on-tertiary/90 leading-relaxed max-w-xl">
           We believe real transformation unfolds at the intersection of dedicated prayer, cultural
-          storytelling, and practical hospitality across Kenya.
+          storytelling, and practical hospitality wherever God sends us.
         </p>
       </div>
     </section>

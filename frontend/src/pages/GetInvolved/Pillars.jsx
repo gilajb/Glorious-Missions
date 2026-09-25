@@ -69,40 +69,41 @@ export default function Pillars() {
           </>
         ) : (
           <>
-            {/* Financial Partnership & Giving -- donate-type links */}
-            <div
-              id="giving"
-              className="bg-surface-container-lowest rounded-xl shadow-sm p-space-lg flex flex-col gap-space-sm hover:shadow-md transition-shadow scroll-mt-20"
-            >
+            {/* Prayer & Intercession -- email-type links */}
+            <div className="bg-surface-container-lowest rounded-xl shadow-sm p-space-lg flex flex-col gap-space-sm hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
-                <span className="px-space-xs py-space-xxs rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm uppercase tracking-wider">
-                  Sustainable Ministry
+                <span className="px-space-xs py-space-xxs rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm uppercase tracking-wider">
+                  Spiritual Shield
                 </span>
-                <Icon name="payments" className="text-primary text-[20px]" />
+                <Icon name="church" className="text-tertiary text-[20px]" />
               </div>
               <h3 className="font-headline-sm text-headline-sm text-on-surface">
-                Financial Partnership &amp; Giving
+                Prayer &amp; Intercession Guild
               </h3>
               <p className="font-body-sm text-body-sm text-on-surface-variant">
-                Your giving fuels field ministry, documentary work, and practical care.
+                Prayer is foundational to this mission. Join our prayer network to receive weekly
+                Mission Monday requests from the field and stand with us before anything else we
+                do.
               </p>
               <div className="flex flex-col gap-space-xs pt-space-xxs">
-                {failed || donateLinks.length === 0 ? (
-                  <EmptyRow>Giving channels are being set up. Check back soon.</EmptyRow>
-                ) : (
-                  donateLinks.map((link) => (
+                <Link
+                  to="/prayer"
+                  className="inline-flex items-center gap-space-xs font-label-md text-label-md text-tertiary hover:underline font-bold"
+                >
+                  <span>Submit a Prayer Request</span>
+                  <Icon name="arrow_forward" className="text-[16px]" />
+                </Link>
+                {!failed &&
+                  emailLinks.map((link) => (
                     <a
                       key={link.id}
                       href={link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-space-xs font-label-md text-label-md text-primary hover:text-primary-container transition-colors font-bold"
+                      className="inline-flex items-center gap-space-xs font-label-md text-label-md text-tertiary hover:underline font-bold"
                     >
                       <span>{link.title}</span>
                       <Icon name="arrow_forward" className="text-[16px]" />
                     </a>
-                  ))
-                )}
+                  ))}
               </div>
             </div>
 
@@ -132,39 +133,41 @@ export default function Pillars() {
               </div>
             </div>
 
-            {/* Prayer & Intercession -- email-type links */}
-            <div className="bg-surface-container-lowest rounded-xl shadow-sm p-space-lg flex flex-col gap-space-sm hover:shadow-md transition-shadow">
+            {/* Financial Partnership & Giving -- donate-type links */}
+            <div
+              id="giving"
+              className="bg-surface-container-lowest rounded-xl shadow-sm p-space-lg flex flex-col gap-space-sm hover:shadow-md transition-shadow scroll-mt-20"
+            >
               <div className="flex items-center justify-between">
-                <span className="px-space-xs py-space-xxs rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm uppercase tracking-wider">
-                  Spiritual Shield
+                <span className="px-space-xs py-space-xxs rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm uppercase tracking-wider">
+                  Sustainable Ministry
                 </span>
-                <Icon name="church" className="text-tertiary text-[20px]" />
+                <Icon name="payments" className="text-primary text-[20px]" />
               </div>
               <h3 className="font-headline-sm text-headline-sm text-on-surface">
-                Prayer &amp; Intercession Guild
+                Financial Partnership &amp; Giving
               </h3>
               <p className="font-body-sm text-body-sm text-on-surface-variant">
-                Join our prayer network to receive requests from the field and stand with us.
+                Your giving fuels field ministry, documentary work, and practical care -- one of
+                several ways to walk with us.
               </p>
               <div className="flex flex-col gap-space-xs pt-space-xxs">
-                <Link
-                  to="/prayer"
-                  className="inline-flex items-center gap-space-xs font-label-md text-label-md text-tertiary hover:underline font-bold"
-                >
-                  <span>Submit a Prayer Request</span>
-                  <Icon name="arrow_forward" className="text-[16px]" />
-                </Link>
-                {!failed &&
-                  emailLinks.map((link) => (
+                {failed || donateLinks.length === 0 ? (
+                  <EmptyRow>Giving channels are being set up. Check back soon.</EmptyRow>
+                ) : (
+                  donateLinks.map((link) => (
                     <a
                       key={link.id}
                       href={link.url}
-                      className="inline-flex items-center gap-space-xs font-label-md text-label-md text-tertiary hover:underline font-bold"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-space-xs font-label-md text-label-md text-primary hover:text-primary-container transition-colors font-bold"
                     >
                       <span>{link.title}</span>
                       <Icon name="arrow_forward" className="text-[16px]" />
                     </a>
-                  ))}
+                  ))
+                )}
               </div>
             </div>
 
@@ -178,7 +181,9 @@ export default function Pillars() {
                   Community Channels &amp; Advocacy
                 </h3>
                 <p className="font-body-sm text-body-sm text-on-surface-variant">
-                  Amplify these stories by following and sharing our channels.
+                  Amplify these stories by following and sharing our channels: share weekly
+                  Mission Monday updates, tag field posts, and pray publicly for the communities we
+                  serve.
                 </p>
               </div>
               {failed || socialLinks.length === 0 ? (

@@ -18,14 +18,15 @@ export default function Genesis() {
             </h2>
             <div className="flex flex-col gap-space-md font-body-md text-body-md text-on-surface-variant leading-relaxed">
               <p>
-                In 2014, a documentary team from Glorious Photography Pictures traveled through
-                Samburu and Marsabit, and found not helplessness, but resilience, hospitality,
-                and vibrant local fellowships worshipping under the open sky.
+                We were sent, as Christ sent His disciples in Matthew 28. In 2014, a documentary
+                team from Glorious Photography Pictures traveled through Samburu and Marsabit, and
+                found not helplessness, but resilience, hospitality, and vibrant local fellowships
+                worshipping under the open sky.
               </p>
               <p>
                 Too much mission media relies on grim, desaturated images of deprivation to drive
                 donations, ignoring the <strong>Imago Dei</strong>, the Image of God, in the
-                people it photographs. Glorious Missions was born from that conviction:
+                people it photographs. Mission Monday was born from that conviction:
                 documentary-grade photography paired with long-term, relational ministry,
                 discipling local leaders, supplying vernacular Bibles, and honoring every elder,
                 mother, and child through photographic truth.

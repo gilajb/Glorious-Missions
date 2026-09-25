@@ -12,8 +12,8 @@ import Testimonial from "./Home/Testimonial";
 // otherwise fails to load -- the hero must never be blank while the client
 // hasn't filled in the admin yet.
 const FALLBACK_HERO = {
-  title: "Witnessing Hope Across Kenya",
-  body: "We honor indigenous communities through documentary photography, relational discipleship, and faithful prayer, walking alongside local churches from Nairobi to the plains of Marsabit and Samburu.",
+  title: "SENT",
+  body: "Go. Make disciples. Serve. Tell the story.",
 };
 
 export default function Home() {
@@ -22,10 +22,11 @@ export default function Home() {
   return (
     <div className="flex flex-col w-full">
       <HeroSection
+        eyebrow="Matthew 28:19–20 · NIV"
         title={data?.title || FALLBACK_HERO.title}
         subtitle={data?.body || FALLBACK_HERO.body}
         background={data?.image ?? null}
-        backgroundAlt="Maasai community fellowship gathering in the Rift Valley during golden hour"
+        backgroundAlt="Community fellowship gathering during golden hour"
         primaryCta={{ label: "Support Our Mission", to: "/get-involved#giving", icon: "volunteer_activism" }}
         secondaryCta={{ label: "Explore Stories", to: "/gallery", icon: "collections" }}
       />

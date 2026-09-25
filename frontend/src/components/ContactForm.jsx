@@ -3,7 +3,7 @@ import { useState } from "react";
 import { ApiError } from "../api/client";
 import Icon from "./Icon";
 
-const EMPTY_VALUES = { name: "", email: "", message: "" };
+const BASE_EMPTY_VALUES = { name: "", email: "", message: "" };
 
 function formatRetryAfter(seconds) {
   if (!seconds || seconds < 60) return "in a little while";
@@ -33,6 +33,10 @@ function formatRetryAfter(seconds) {
  * @param {string} [props.namePlaceholder]
  * @param {string} [props.emailPlaceholder]
  * @param {string} [props.messagePlaceholder]
+ * @param {string} [props.involvementLabel] label for an optional "how would you like to be
+ *   involved?" select, rendered before the message field -- omit to leave the form as
+ *   name/email/message only (e.g. the Get Involved page's reuse of this component)
+ * @param {{value: string, label: string}[]} [props.involvementOptions]
  */
 export default function ContactForm({
   onSubmit,
@@ -44,8 +48,15 @@ export default function ContactForm({
   namePlaceholder,
   emailPlaceholder,
   messagePlaceholder,
+  involvementLabel,
+  involvementOptions,
 }) {
-  const [values, setValues] = useState(EMPTY_VALUES);
+  const showInvolvement = Boolean(involvementLabel && involvementOptions?.length);
+  const emptyValues = showInvolvement
+    ? { ...BASE_EMPTY_VALUES, involvement_interest: "" }
+    : BASE_EMPTY_VALUES;
+
+  const [values, setValues] = useState(emptyValues);
   const [fieldErrors, setFieldErrors] = useState({});
   const [formError, setFormError] = useState(null);
   const [status, setStatus] = useState("idle"); // idle | submitting | success
@@ -63,7 +74,7 @@ export default function ContactForm({
     try {
       await onSubmit(values);
       setStatus("success");
-      setValues(EMPTY_VALUES);
+      setValues(emptyValues);
     } catch (error) {
       setStatus("idle");
 
@@ -124,6 +135,23 @@ export default function ContactForm({
         autoComplete="email"
         required
       />
+      {showInvolvement && (
+        <Field
+          id="contact-involvement"
+          label={involvementLabel}
+          as="select"
+          value={values.involvement_interest}
+          onChange={handleChange("involvement_interest")}
+          error={fieldErrors.involvement_interest}
+        >
+          <option value="">Select an option</option>
+          {involvementOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </Field>
+      )}
       <Field
         id="contact-message"
         label={messageLabel}
@@ -153,7 +181,7 @@ export default function ContactForm({
   );
 }
 
-function Field({ id, label, error, as = "input", ...rest }) {
+function Field({ id, label, error, as = "input", children, ...rest }) {
   const Tag = as;
   return (
     <div className="flex flex-col gap-space-xxs">
@@ -168,7 +196,9 @@ function Field({ id, label, error, as = "input", ...rest }) {
           error ? "border-error" : "border-outline-variant"
         }`}
         {...rest}
-      />
+      >
+        {children}
+      </Tag>
       {error && (
         <p id={`${id}-error`} className="font-body-sm text-body-sm text-error">
           {Array.isArray(error) ? error[0] : error}

@@ -38,7 +38,7 @@ export default function EthicsCallout() {
             Learn About Our Calling
           </Link>
           <Link
-            to="/get-involved"
+            to="/get-involved#volunteer-form"
             className="px-space-lg py-space-sm bg-primary-container text-on-primary font-label-md text-label-md rounded-lg transition-colors shadow-sm text-center"
           >
             Join the Media Crew

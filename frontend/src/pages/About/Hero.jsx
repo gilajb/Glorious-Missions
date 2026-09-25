@@ -10,7 +10,7 @@ import { useFetch } from "../../hooks/useFetch";
  */
 const FALLBACK_ABOUT = {
   title: "Restoring Dignity Through Faith and Photography",
-  body: "Glorious Missions began behind a camera lens in the Great Rift Valley. We walk alongside indigenous churches and communities with reverence, practical care, and unconditional love.",
+  body: "Mission Monday began behind a camera lens in the Great Rift Valley, sent to proclaim Christ. We walk alongside indigenous churches and communities with reverence, practical care, and unconditional love.",
 };
 
 /**

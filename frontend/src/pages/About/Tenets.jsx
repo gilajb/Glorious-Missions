@@ -2,13 +2,27 @@ import Icon from "../../components/Icon";
 
 const TENETS = [
   {
-    key: "compassion",
+    key: "faith",
     iconBg: "bg-primary-fixed",
     iconText: "text-primary",
     labelText: "text-primary",
-    icon: "volunteer_activism",
+    icon: "auto_stories",
     label: "Tenet One",
-    title: "Compassion in Action",
+    title: "Faith",
+    description:
+      "The Gospel is the foundation of everything we do. We go because we were sent, trusting God to work through prayer, presence, and proclamation before anything else.",
+    verseRef: "Romans 10:14-15",
+    verseText:
+      "“How can they hear without someone preaching to them? And how can anyone preach unless they are sent?”",
+  },
+  {
+    key: "love",
+    iconBg: "bg-secondary-fixed",
+    iconText: "text-secondary",
+    labelText: "text-secondary",
+    icon: "volunteer_activism",
+    label: "Tenet Two",
+    title: "Love",
     description:
       "Faith without works is dead, as James teaches. We don't arrive with words alone. We show up, walk alongside local churches through hardship and joy, and give practically as needs arise.",
     verseRef: "James 2:16",
@@ -16,29 +30,15 @@ const TENETS = [
       "“If one of you says, 'Go in peace; keep warm and well fed,' but does nothing about their physical needs, what good is it?”",
   },
   {
-    key: "autonomy",
-    iconBg: "bg-secondary-fixed",
-    iconText: "text-secondary",
-    labelText: "text-secondary",
-    icon: "diversity_3",
-    label: "Tenet Two",
-    title: "Community Autonomy",
-    description:
-      "We reject paternalistic intervention. Rather than build parallel hierarchies, we support the indigenous pastors and elders who know their people best. Every initiative is led by, and handed to, local leadership.",
-    verseRef: "1 Thessalonians 5:12",
-    verseText:
-      "“Honor those who work hard among you, who care for you in the Lord and who admonish you.”",
-  },
-  {
-    key: "documentation",
+    key: "dignity",
     iconBg: "bg-tertiary-fixed",
     iconText: "text-tertiary",
     labelText: "text-tertiary",
     icon: "photo_library",
     label: "Tenet Three",
-    title: "Truthful Documentation",
+    title: "Dignity",
     description:
-      "Visual storytelling is sacred stewardship. We refuse staged grief or pity-exploiting tropes. Our images show joy, beauty, and honest hardship with transparency, always preserving the dignity of every subject.",
+      "We reject paternalistic intervention and staged grief or pity-exploiting tropes. We support the indigenous pastors and elders who know their people best, and our images show joy, beauty, and honest hardship with transparency, always preserving the dignity of every subject.",
     verseRef: "Ephesians 4:25",
     verseText:
       "“Therefore each of you must put off falsehood and speak truthfully to your neighbor, for we are all members of one body.”",
@@ -63,7 +63,7 @@ export default function Tenets() {
           </div>
           <p className="font-body-md text-body-md text-on-surface-variant max-w-md">
             How we conduct operations, hold accountability before God, and serve alongside
-            communities across Kenya.
+            communities wherever God sends us.
           </p>
         </div>
 

@@ -22,8 +22,8 @@ from django.contrib import admin
 from django.http import JsonResponse
 from django.urls import include, path
 
-admin.site.site_header = "Glorious Missions administration"
-admin.site.site_title = "Glorious Missions admin"
+admin.site.site_header = "Mission Monday administration"
+admin.site.site_title = "Mission Monday admin"
 admin.site.index_title = "Site content"
 
 

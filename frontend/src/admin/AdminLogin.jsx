@@ -40,7 +40,7 @@ export default function AdminLogin() {
         <div className="flex flex-col gap-space-xxs text-center">
           <h1 className="font-headline-sm text-headline-sm text-on-surface">Admin sign in</h1>
           <p className="font-body-sm text-body-sm text-on-surface-variant">
-            Glorious Missions content admin
+            Mission Monday content admin
           </p>
         </div>
 

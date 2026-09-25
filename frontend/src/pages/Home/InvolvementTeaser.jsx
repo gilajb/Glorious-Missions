@@ -53,11 +53,11 @@ export default function InvolvementTeaser() {
             Get Involved
           </span>
           <h2 className="font-headline-lg text-headline-lg text-on-surface mt-space-xxs">
-            Stand with Our Mission
+            Walk with Us
           </h2>
           <p className="font-body-md text-body-md text-on-surface-variant mt-space-xs">
-            Your prayers, generosity, and partnership help us reach more communities with the
-            Gospel.
+            Prayer, presence, and partnership are all part of walking with us as we carry the
+            Gospel to more communities.
           </p>
         </div>
 
