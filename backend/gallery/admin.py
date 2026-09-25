@@ -13,10 +13,10 @@ class GalleryPhotoInline(CloudinaryPreviewMixin, admin.TabularInline):
 
 @admin.register(GalleryImage)
 class GalleryImageAdmin(CloudinaryPreviewMixin, admin.ModelAdmin):
-    list_display = ["__str__", "image_preview", "published", "uploaded_at"]
-    list_filter = ["published", "uploaded_at"]
+    list_display = ["__str__", "image_preview", "category", "published", "uploaded_at"]
+    list_filter = ["category", "published", "uploaded_at"]
     list_editable = ["published"]
     date_hierarchy = "uploaded_at"
     readonly_fields = ["image_preview", "uploaded_at"]
     inlines = [GalleryPhotoInline]
-    fields = ["image", "image_preview", "published", "uploaded_at"]
+    fields = ["image", "image_preview", "category", "published", "uploaded_at"]

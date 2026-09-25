@@ -21,7 +21,7 @@ class GalleryImageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GalleryImage
-        fields = ["id", "image", "photos", "uploaded_at"]
+        fields = ["id", "image", "category", "photos", "uploaded_at"]
 
     def get_image(self, obj):
         cover = next(iter(obj.photos.all()), None)

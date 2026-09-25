@@ -5,7 +5,12 @@ import Icon from "../../components/Icon";
 import SafeImage from "../../components/SafeImage";
 import { ApiError } from "../../api/client";
 import { createGalleryEntry, deleteGalleryEntry, getAdminGalleryEntries, toggleGalleryPublish } from "../../api/endpoints";
+import { CATEGORIES } from "../../hooks/useCategoryFilter";
 import { useFetch } from "../../hooks/useFetch";
+
+function categoryLabel(value) {
+  return CATEGORIES.find((category) => category.value === value)?.label || value;
+}
 import { useAuth } from "../AuthContext";
 
 function actionErrorMessage(err) {
@@ -104,7 +109,8 @@ export default function GalleryManager() {
               </div>
               <div className="p-space-md flex flex-col gap-space-xs">
                 <p className="font-label-sm text-label-sm text-on-surface-variant">
-                  {entry.photos.length} photo{entry.photos.length === 1 ? "" : "s"}
+                  {categoryLabel(entry.category)} · {entry.photos.length} photo
+                  {entry.photos.length === 1 ? "" : "s"}
                   {!entry.published && " · Draft"}
                 </p>
                 <div className="flex items-center gap-space-xs pt-space-xs">

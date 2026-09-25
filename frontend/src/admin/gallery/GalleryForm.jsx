@@ -9,7 +9,9 @@ import {
   getAdminGalleryEntry,
   reorderGalleryPhoto,
   toggleGalleryPublish,
+  updateGalleryEntry,
 } from "../../api/endpoints";
+import { CATEGORIES } from "../../hooks/useCategoryFilter";
 import { useAuth } from "../AuthContext";
 import PhotoUploader from "../components/PhotoUploader";
 
@@ -56,6 +58,19 @@ export default function GalleryForm() {
     await reorderGalleryPhoto(current.id, other.order, token);
     await reorderGalleryPhoto(other.id, current.order, token);
     await refresh();
+  };
+
+  const handleCategoryChange = async (event) => {
+    setBusy(true);
+    setActionError(null);
+    try {
+      await updateGalleryEntry(id, { category: event.target.value }, token);
+      await refresh();
+    } catch (err) {
+      setActionError(actionErrorMessage(err));
+    } finally {
+      setBusy(false);
+    }
   };
 
   const handleTogglePublish = async () => {
@@ -107,11 +122,29 @@ export default function GalleryForm() {
       )}
 
       <div className="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
-        <div className="flex items-center justify-between">
-          <h2 className="font-headline-sm text-headline-sm text-on-surface">Photos</h2>
+        <div className="flex items-center justify-between gap-space-md">
+          <label className="flex flex-col gap-space-xxs">
+            <span className="font-label-md text-label-md text-on-surface">Category</span>
+            <select
+              value={entry.category}
+              onChange={handleCategoryChange}
+              disabled={busy}
+              className="px-space-md py-space-sm rounded-lg bg-surface border border-outline-variant font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              {CATEGORIES.map((category) => (
+                <option key={category.value} value={category.value}>
+                  {category.label}
+                </option>
+              ))}
+            </select>
+          </label>
           <span className="font-label-sm text-label-sm text-on-surface-variant">
             {entry.published ? "Published" : "Draft"}
           </span>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <h2 className="font-headline-sm text-headline-sm text-on-surface">Photos</h2>
         </div>
         <PhotoUploader
           photos={entry.photos}

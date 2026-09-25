@@ -1,9 +1,15 @@
 import Icon from "../../components/Icon";
 import SafeImage from "../../components/SafeImage";
+import { CATEGORIES } from "../../hooks/useCategoryFilter";
 import { formatMonthYear } from "../../utils/dates";
+
+function categoryLabel(value) {
+  return CATEGORIES.find((category) => category.value === value)?.label;
+}
 
 export default function GalleryCard({ image, onOpen }) {
   const dateLabel = formatMonthYear(image.uploaded_at);
+  const categoryName = categoryLabel(image.category);
 
   return (
     <article className="flex flex-col bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
@@ -34,9 +40,18 @@ export default function GalleryCard({ image, onOpen }) {
         </div>
       </button>
 
-      {dateLabel && (
-        <div className="p-space-lg">
-          <span className="font-label-sm text-label-sm text-on-surface-variant">{dateLabel}</span>
+      {(categoryName || dateLabel) && (
+        <div className="p-space-lg flex items-center justify-between gap-space-sm">
+          {categoryName && (
+            <span className="px-space-xs py-space-xxs rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
+              {categoryName}
+            </span>
+          )}
+          {dateLabel && (
+            <span className="font-label-sm text-label-sm text-on-surface-variant">
+              {dateLabel}
+            </span>
+          )}
         </div>
       )}
     </article>
