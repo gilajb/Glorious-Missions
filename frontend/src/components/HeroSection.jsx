@@ -12,6 +12,9 @@ import SafeImage from "./SafeImage";
  * configured (or for pages with no photo yet) it falls back to a plain
  * surface tone rather than a broken image.
  *
+ * `aside`, if given, sits beside the headline on large screens and below
+ * the CTAs on small ones (e.g. the home page's scripture card).
+ *
  * `children`, if given, renders below the CTAs (e.g. a page-specific stats
  * strip) -- kept out of this component so it stays generic.
  */
@@ -23,9 +26,12 @@ export default function HeroSection({
   backgroundAlt = "",
   primaryCta,
   secondaryCta,
+  aside,
   children,
   priority = true,
 }) {
+  const isShortTitle = typeof title === "string" && title.trim().length <= 12;
+
   return (
     // -mt-20 cancels Layout's `pt-20` (the fixed header's height) so the
     // background photo runs full-bleed behind the translucent header, as in
@@ -57,8 +63,9 @@ export default function HeroSection({
         of the header once content (long body copy + wrapping CTAs on
         mobile) exceeds min-h and the flex box has no slack left above it.
       */}
-      <div className="relative z-10 w-full max-w-[1320px] mx-auto px-margin-mobile md:px-margin-tablet lg:px-margin-desktop pt-space-4xl pb-space-3xl md:pb-space-4xl flex flex-col justify-end min-h-[60vh] md:min-h-[70vh]">
-        <div className="max-w-3xl flex flex-col items-start">
+      <div className="relative z-10 w-full max-w-[1320px] mx-auto px-margin-mobile md:px-margin-tablet lg:px-margin-desktop pt-space-4xl pb-space-xl md:pb-space-2xl flex flex-col justify-end min-h-[70vh] md:min-h-[max(30rem,31.25vw)]">
+        <div className="grid gap-space-xl lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] lg:items-end">
+        <div className="max-w-2xl flex flex-col items-start">
           {eyebrow && (
             <div className="inline-flex items-center gap-space-xs px-space-md py-space-xxs rounded-full bg-surface-container-lowest/90 backdrop-blur-md mb-space-md shadow-sm">
               <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
@@ -68,12 +75,25 @@ export default function HeroSection({
             </div>
           )}
 
-          <h1 className="font-display text-display-mobile md:text-display text-surface-container-lowest drop-shadow-sm font-bold tracking-tight mb-space-md">
+          {/*
+            A one-word title ("SENT") at the regular display size looks lost
+            against a full-bleed photo, so short titles get a statement size.
+            Longer admin-entered titles keep the regular display scale.
+          */}
+          <h1
+            className={`font-display text-surface-container-lowest drop-shadow-md font-bold ${
+              isShortTitle
+                ? "text-[clamp(2.75rem,7vw,4.75rem)] leading-none tracking-[0.08em]"
+                : "text-display-mobile md:text-display tracking-tight"
+            }`}
+          >
             {title}
           </h1>
 
+          <span aria-hidden="true" className="block w-16 h-1 rounded-full bg-primary-container mt-space-sm mb-space-md" />
+
           {subtitle && (
-            <p className="font-body-lg text-body-lg text-surface-container-high/95 max-w-2xl font-normal leading-relaxed mb-space-xl">
+            <p className="font-display italic text-[19px] leading-[1.4] md:text-[22px] text-surface-container-lowest/90 max-w-xl drop-shadow-sm mb-space-xl md:mb-space-2xl">
               {subtitle}
             </p>
           )}
@@ -102,6 +122,9 @@ export default function HeroSection({
               )}
             </div>
           )}
+        </div>
+
+        {aside}
         </div>
 
         {children}

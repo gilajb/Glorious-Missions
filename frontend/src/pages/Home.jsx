@@ -16,19 +16,35 @@ const FALLBACK_HERO = {
   body: "Go. Make disciples. Serve. Tell the story.",
 };
 
+function CommissionCard() {
+  return (
+    <figure className="max-w-sm rounded-xl bg-surface-container-lowest/10 backdrop-blur-md border border-surface-container-lowest/20 p-space-lg shadow-lg">
+      <blockquote className="font-display italic text-[17px] leading-[1.55] text-surface-container-lowest/95">
+        &ldquo;Therefore go and make disciples of all nations, baptizing them in the name of the
+        Father and of the Son and of the Holy Spirit, and teaching them to obey everything I have
+        commanded you. And surely I am with you always, to the very end of the age.&rdquo;
+      </blockquote>
+      <figcaption className="mt-space-md flex items-center gap-space-xs font-label-sm text-label-sm uppercase tracking-widest text-surface-container-lowest/80">
+        <span className="w-6 h-0.5 rounded-full bg-primary-container" />
+        Matthew 28:19&ndash;20 &middot; NIV
+      </figcaption>
+    </figure>
+  );
+}
+
 export default function Home() {
   const { data } = useFetch(() => getSiteContent("home"));
 
   return (
     <div className="flex flex-col w-full">
       <HeroSection
-        eyebrow="Matthew 28:19–20 · NIV"
         title={data?.title || FALLBACK_HERO.title}
         subtitle={data?.body || FALLBACK_HERO.body}
         background={data?.image ?? null}
         backgroundAlt="Community fellowship gathering during golden hour"
         primaryCta={{ label: "Support Our Mission", to: "/get-involved#giving", icon: "volunteer_activism" }}
         secondaryCta={{ label: "Explore Stories", to: "/gallery", icon: "collections" }}
+        aside={<CommissionCard />}
       />
 
       <ScriptureBridge />
