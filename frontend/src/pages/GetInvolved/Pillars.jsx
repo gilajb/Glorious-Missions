@@ -69,7 +69,7 @@ export default function Pillars() {
           </>
         ) : (
           <>
-            {/* Prayer & Intercession -- email-type links */}
+            {/* Prayer Draft -- email-type links */}
             <div className="bg-surface-container-lowest rounded-xl shadow-sm p-space-lg flex flex-col gap-space-sm hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
                 <span className="px-space-xs py-space-xxs rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm uppercase tracking-wider">
@@ -78,7 +78,7 @@ export default function Pillars() {
                 <Icon name="church" className="text-tertiary text-[20px]" />
               </div>
               <h3 className="font-headline-sm text-headline-sm text-on-surface">
-                Prayer &amp; Intercession Guild
+                Prayer Draft
               </h3>
               <p className="font-body-sm text-body-sm text-on-surface-variant">
                 Prayer is foundational to this mission. Join our prayer network to receive weekly

@@ -5,7 +5,7 @@ import { useFetch } from "../hooks/useFetch";
 
 /**
  * Destination for both the Footer's "Discipleship & Prayer" initiative link
- * and the Get Involved page's "Prayer & Intercession Guild" card. Where that
+ * and the Get Involved page's "Prayer Draft" card. Where that
  * card used to dead-end on "Prayer network signup is coming soon," it now
  * links here, and this page has a real working form (posts to the same
  * GetInvolvedSubmission endpoint as the rest of the Get Involved page)

@@ -24,6 +24,11 @@
   letter-spacing: normal;
   text-transform: none;
   display: inline-block;
+  /* Clip to one glyph so the ligature name never spills out as text while
+     the font is loading (or if it fails to load at all). */
+  width: 1em;
+  height: 1em;
+  overflow: hidden;
   white-space: nowrap;
   word-wrap: normal;
   direction: ltr;
