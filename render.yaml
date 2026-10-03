@@ -51,3 +51,7 @@ services:
         sync: false
       - key: NOTIFY_EMAIL
         sync: false
+      - key: PAYSTACK_SECRET_KEY
+        sync: false
+      - key: DONATION_CURRENCY
+        value: "KES"

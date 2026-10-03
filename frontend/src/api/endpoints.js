@@ -33,6 +33,19 @@ export const submitContact = (payload) => apiPost("/api/contact/", payload);
  */
 export const submitGetInvolved = (payload) => apiPost("/api/get-involved/submit/", payload);
 
+/** @returns {Promise<{enabled: boolean, currency: string}>} whether online giving is switched on */
+export const getDonationConfig = () => apiGet("/api/donations/config/");
+
+/**
+ * @param {{name?: string, email: string, amount: string, callback_url: string}} payload
+ * @returns {Promise<{reference: string, authorization_url: string}>} the Paystack checkout to send the donor to
+ */
+export const createDonation = (payload) => apiPost("/api/donations/", payload);
+
+/** @returns {Promise<{reference: string, status: "pending"|"success"|"failed"|"abandoned", amount: string, currency: string}>} */
+export const verifyDonation = (reference) =>
+  apiGet(`/api/donations/${encodeURIComponent(reference)}/verify/`);
+
 // ---------------------------------------------------------------------------
 // Admin portal -- every call below requires a staff auth token.
 // ---------------------------------------------------------------------------

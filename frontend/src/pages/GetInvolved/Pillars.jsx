@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
 
-import { getInvolvedLinks } from "../../api/endpoints";
+import { getDonationConfig, getInvolvedLinks } from "../../api/endpoints";
 import Icon from "../../components/Icon";
 import { useFetch } from "../../hooks/useFetch";
+import DonationForm from "./DonationForm";
 
 function iconForSocialLink(title = "") {
   const t = title.toLowerCase();
@@ -38,12 +39,18 @@ function CardSkeleton() {
  * could send real money to a made-up account), so that card renders
  * whatever real `donate` links exist instead, with an honest empty state if
  * none are published yet -- same treatment for the `email` (prayer network)
- * and `social` (community channels) groups.
+ * and `social` (community channels) groups. When the backend has Paystack
+ * configured, the card also carries the on-site giving form above any links.
  */
 export default function Pillars() {
-  const { data, error, loading } = useFetch(() => getInvolvedLinks());
+  const { data, error, loading: linksLoading } = useFetch(() => getInvolvedLinks());
+  // Online giving is off until the backend has a Paystack key; a failed
+  // config fetch is treated the same way, so the card falls back to links.
+  const { data: givingConfig, loading: configLoading } = useFetch(() => getDonationConfig());
+  const loading = linksLoading || configLoading;
   const links = data || [];
   const failed = !loading && error;
+  const givingEnabled = Boolean(givingConfig?.enabled);
 
   const donateLinks = links.filter((l) => l.link_type === "donate");
   const emailLinks = links.filter((l) => l.link_type === "email");
@@ -152,8 +159,11 @@ export default function Pillars() {
                 several ways to walk with us.
               </p>
               <div className="flex flex-col gap-space-xs pt-space-xxs">
+                {givingEnabled && <DonationForm currency={givingConfig.currency} />}
                 {failed || donateLinks.length === 0 ? (
-                  <EmptyRow>Giving channels are being set up. Check back soon.</EmptyRow>
+                  !givingEnabled && (
+                    <EmptyRow>Giving channels are being set up. Check back soon.</EmptyRow>
+                  )
                 ) : (
                   donateLinks.map((link) => (
                     <a

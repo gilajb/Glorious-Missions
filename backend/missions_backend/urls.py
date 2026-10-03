@@ -8,6 +8,11 @@
     GET  /api/get-involved/links/
     POST /api/get-involved/submit/
 
+    GET  /api/donations/config/
+    POST /api/donations/
+    GET  /api/donations/<reference>/verify/
+    POST /api/donations/webhook/   (called by Paystack, not the frontend)
+
     POST /api/auth/login/
     POST /api/auth/logout/
     GET  /api/auth/me/
@@ -41,6 +46,7 @@ urlpatterns = [
     path("api/", include("gallery.urls")),
     path("api/", include("contact.urls")),
     path("api/", include("involvement.urls")),
+    path("api/", include("donations.urls")),
     path("api/admin/", include("missions.admin_urls")),
     path("api/admin/", include("gallery.admin_urls")),
 ]

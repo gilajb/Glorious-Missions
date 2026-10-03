@@ -89,6 +89,7 @@ INSTALLED_APPS = [
     "gallery",
     "contact",
     "involvement",
+    "donations",
 ]
 
 MIDDLEWARE = [
@@ -228,6 +229,10 @@ REST_FRAMEWORK = {
         "contact": "5/hour",
         "get_involved": "5/hour",
         "login": "10/hour",
+        # Each donate call creates a row and a Paystack transaction; verify
+        # is polled by the frontend when a donor returns from checkout.
+        "donate": "20/hour",
+        "donate_verify": "120/hour",
         # Backstop for the whole staff admin API (keyed per-user, since these
         # requests are always authenticated) against a leaked/compromised
         # token running away, not a limit normal admin use should ever near.
@@ -293,6 +298,16 @@ if EMAIL_HOST:
 else:
     # No SMTP configured -- print notifications to the console instead.
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+
+# ---------------------------------------------------------------------------
+# Paystack -- online giving
+# ---------------------------------------------------------------------------
+
+# Blank disables the giving form (the frontend hides it) rather than erroring.
+PAYSTACK_SECRET_KEY = os.environ.get("PAYSTACK_SECRET_KEY", "")
+# Must be a currency enabled on the Paystack account (KES, NGN, GHS, ZAR, USD).
+DONATION_CURRENCY = (os.environ.get("DONATION_CURRENCY") or "KES").upper()
 
 
 # ---------------------------------------------------------------------------

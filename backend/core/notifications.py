@@ -57,3 +57,46 @@ def notify_new_submission(submission, *, form_name):
 
     logger.info("Sent %s notification for submission #%s", form_name, submission.pk)
     return True
+
+
+def notify_new_donation(donation):
+    """Email NOTIFY_EMAIL about a donation Paystack has confirmed as paid.
+
+    Returns True if the message was handed to the email backend, else False.
+    Never raises.
+    """
+    recipient = getattr(settings, "NOTIFY_EMAIL", "")
+    if not recipient:
+        logger.warning(
+            "NOTIFY_EMAIL is not set; skipping notification for donation %s",
+            donation.reference,
+        )
+        return False
+
+    subject = f"New donation: {donation.currency} {donation.amount:,.2f}"
+    body = (
+        "A donation was received through the website.\n\n"
+        f"Amount:    {donation.currency} {donation.amount:,.2f}\n"
+        f"Name:      {donation.name or '(not given)'}\n"
+        f"Email:     {donation.email}\n"
+        f"Paid via:  {donation.channel or 'unknown'}\n"
+        f"Paid at:   {donation.paid_at:%Y-%m-%d %H:%M %Z}\n"
+        f"Reference: {donation.reference}\n"
+    )
+
+    try:
+        send_mail(
+            subject=subject,
+            message=body,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[recipient],
+            fail_silently=False,
+        )
+    except Exception:
+        logger.exception(
+            "Failed to send notification email for donation %s", donation.reference
+        )
+        return False
+
+    logger.info("Sent notification for donation %s", donation.reference)
+    return True
