@@ -1,5 +1,6 @@
 from cloudinary.models import CloudinaryField
 from django.db import models
+from django.utils import timezone
 
 
 class GalleryImage(models.Model):
@@ -23,7 +24,10 @@ class GalleryImage(models.Model):
         max_length=20, choices=Category.choices, default=Category.STORIES
     )
     published = models.BooleanField(default=False)
-    uploaded_at = models.DateTimeField(auto_now_add=True)
+    # Defaults to the upload time but stays editable, so older photos can be
+    # backdated to when they were taken. Drives the public date label and
+    # the newest-first ordering.
+    uploaded_at = models.DateTimeField(default=timezone.now)
 
     class Meta:
         ordering = ["-uploaded_at"]

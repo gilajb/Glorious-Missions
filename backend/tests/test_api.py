@@ -664,6 +664,24 @@ class AdminGalleryApiTests(TestCase):
         self.assertEqual(response.status_code, 201, response.content)
         self.assertEqual(self.client.get("/api/gallery/").json()["results"], [])
 
+    def test_entry_date_can_be_backdated(self):
+        older = GalleryImage.objects.create(image="", published=True)
+        newer = GalleryImage.objects.create(image="", published=True)
+
+        response = self.client.patch(
+            f"/api/admin/gallery/{newer.pk}/",
+            {"uploaded_at": "2022-05-14T12:00:00Z"},
+            content_type="application/json",
+            **self.auth_header,
+        )
+
+        self.assertEqual(response.status_code, 200, response.content)
+        newer.refresh_from_db()
+        self.assertEqual(newer.uploaded_at.date().isoformat(), "2022-05-14")
+        # Ordering follows the edited date, so the backdated entry drops below.
+        rows = self.client.get("/api/gallery/").json()["results"]
+        self.assertEqual([row["id"] for row in rows], [older.pk, newer.pk])
+
     @mock.patch("cloudinary.uploader.upload_resource")
     def test_adding_a_photo_reflects_on_the_public_endpoint(self, upload_resource):
         upload_resource.return_value = _fake_uploaded_photo()
